@@ -30,17 +30,29 @@ object Main {
    * Exercise 2
    */
   def balance(chars: List[Char]): Boolean = {
+
     def loop(count: Int, chars: List[Char]): Boolean =
       if (count < 0 || chars.isEmpty && count > 0) false
       else if (chars.isEmpty && count == 0) true
       else if (chars.head == '(') loop(count + 1, chars.tail)
       else if (chars.head == ')') loop(count - 1, chars.tail)
       else loop(count, chars.tail)
+
     loop(0, chars)
   }
 
   /**
    * Exercise 3
    */
-  def countChange(money: Int, coins: List[Int]): Int = ???
+  def countChange(money: Int, coins: List[Int]): Int = {
+    val scoins = coins.sorted.reverse
+
+    def count(n: Int, c: List[Int]): Int = 
+      if (n == 0) 1
+      else if (n < 0) 0
+      else if (n >= 1 && c.isEmpty) 0
+      else count(n, c.tail) + count(n - c.head, c) 
+
+    count(money, scoins)
+  }
 }
