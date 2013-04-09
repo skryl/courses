@@ -118,5 +118,3 @@ class Rational(x: Int, y: Int) {
 val r = new Rational(1,2)
 val x = new Rational(1,3)
 r add x
-
-
