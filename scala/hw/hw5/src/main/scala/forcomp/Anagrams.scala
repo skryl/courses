@@ -162,6 +162,8 @@ object Anagrams {
 
   def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
 
+    val cache = collection.mutable.Map[Occurrences, List[List[Word]]]()
+
     def wordsForOccurrences(occurrences: Occurrences):List[Word] =
       dictionaryByOccurrences get occurrences match {
         case Some(l:List[Word]) => l
@@ -176,11 +178,20 @@ object Anagrams {
           words  =  wordsForOccurrences(occur)
           if !words.isEmpty
           word <- words
-          anagram <- occurrenceAnagrams(subtract(occurrences, occur))
+          anagram <- occurrenceAnagramsCached(subtract(occurrences, occur))
         } yield word :: anagram
     }
 
-    occurrenceAnagrams(sentenceOccurrences(sentence))
+    def occurrenceAnagramsCached(occurrences: Occurrences): List[List[Word]] = cache get occurrences match {
+      case Some(w) => w
+      case None => {
+        val w = occurrenceAnagrams(occurrences)
+        cache(occurrences) = w
+        w
+      }
+    }
+
+    occurrenceAnagramsCached(sentenceOccurrences(sentence))
   }
 
 }
