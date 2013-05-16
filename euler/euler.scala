@@ -8,24 +8,22 @@ def multiples_3_and_5 =
 // Ans: 4613732
 //
 def even_fib:Int= {
-  var cache:Map[Int, Int] = Map()
+  val cache = collection.mutable.Map[Int, Int]()
 
   def fib(n:Int):Int= {
     if (n == 1 || n == 2) n else cache get n match {
       case Some(f) => f
       case None    => {
         val f = fib(n - 1) + fib(n - 2)
-        cache = cache + (n -> f)
+        cache(n) = f
         return f
       }
     }
   }
 
-  (for { 
-    x <- (1 to 32)
-    val f = fib(x)
-    if f % 2 == 0
-  } yield f).sum
+  def fibFrom(n: Int): Stream[Int] = fib(n) #:: fibFrom(n+1)
+  val evenFib = fibFrom(1).filter(_ % 2 == 0)
+  evenFib.takeWhile(_ < 4000000).sum
 }
   
 // Problem 3: Largest Prime Factor of 600851475143

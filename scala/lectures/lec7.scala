@@ -17,6 +17,27 @@ def listRange(lo: Int, hi: Int): List[Int] = {
   else lo :: listRange(lo + 1, hi)
 }
 
+// list to stream
+//
+def toStream(l: List[Int]): Stream[Int] = {
+  if (l.isEmpty) Stream.empty
+  else l.head #:: toStream(l.tail)
+}
+
+// ops on lazy collections are also lazy
+//
+def map[T](s: Stream[Int])(f:Int => T): Stream[T] = {
+  if (s.isEmpty) Stream.empty
+  else f(s.head) #:: map(s.tail)(f)
+}
+
+def filter[T](s: Stream[Int])(f:Int => Boolean): Stream[Int] = {
+  if (s.isEmpty) Stream.empty
+  else {
+    if (f(s.head)) s.head #:: filter(s.tail)(f) else filter(s.tail)(f)
+  }
+}
+
 // :: operator always produces a List
 x #:: xs = Stream.cons(x, xs)
 
@@ -172,7 +193,11 @@ class Pouring(capacity: Vector[Int]) {
 
 }
 
+val s = List(1,2,3).toStream
+
 object test {
   val problem = new Pouring(Vector(4,9))
   problem.solution(6)
 }
+
+
