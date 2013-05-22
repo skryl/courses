@@ -143,3 +143,96 @@ for (l <- List(List(1,3,5,7), List(2,4,6,8), List())) {
   processList(l)
 }
 
+// tuples (and guards)
+
+val tupA = ("Good", "Morning!")
+val tupB = ("Guten", "Tag!")
+
+for (tup <- List(tupA, tupB)) {
+  tup match {
+    case (thingOne, thingTwo) if thingOne == "Good" =>
+      println("A two-tuple starting with 'Good'")
+    case (thingOne, thingTwo) =>
+      println("This has two things: " + thingOne + " and " + thingTwo)
+  }
+}
+
+// case classes
+
+case class Person(name: String, age: Int)
+
+val alice = new Person("Alice", 25)
+val bob = new Person("Bob", 32)
+val charlie = new Person("Charlie", 30)
+
+for (person <- List(alice, bob, charlie)) {
+  person match {
+    case Person("Alice", 25) => println("Hi Alice!")
+    case Person("Bob", 32) => println("Hi Bob!")
+    case Person(name, age) =>
+      println("Who are you, " + age + " year-old person named " + name + "?")
+  }
+}
+
+// regexes
+
+val BookExtractorRE = """Book: title=([^,]+),\s+authors=(.+)""".r
+val MagazineExtractorRE = """Magazine: title=([^,]+),\s+issue=(.+)""".r
+
+val catalog = List(
+  "Book: title=Programming Scala, authors=Dean Wampler, Alex Payne", "Magazine: title=The New Yorker, issue=January 2009",
+  "Book: title=War and Peace, authors=Leo Tolstoy",
+  "Magazine: title=The Atlantic, issue=February 2009",
+  "BadData: text=Who put this here??"
+)
+
+for (item <- catalog) { item match {
+  case BookExtractorRE(title, authors) =>
+    println("Book \"" + title + "\", written by " + authors)
+  case MagazineExtractorRE(title, issue) => println("Magazine \"" + title + "\", issue " + issue)
+  case entry => println("Unrecognized entry: " + entry) }
+}
+
+// binding variables
+
+class Role
+case object Manager extends Role
+case object Developer extends Role
+
+case class Person(name: String, age: Int, role: Role)
+
+val alice = new Person("Alice", 25, Developer)
+val bob = new Person("Bob", 32, Manager)
+val charlie = new Person("Charlie", 32, Developer)
+
+for (item <- Map(1 -> alice, 2 -> bob, 3 -> charlie)) {
+  item match {
+    case (id, p @ Person(_, _, Manager)) => println(format ("%s is overpaid.\n", p))
+    case (id, p @ Person(_, _, _)) => println(format ("%s is underpaid.\n", p))
+  }
+}
+
+for (item <- Map(1 -> alice, 2 -> bob, 3 -> charlie)) {
+  item match {
+    case (id, p: Person) => p.role match {
+      case Manager => println(format("%s is overpaid.\n", p))
+      case _ => println(format("%s is underpaid.\n", p))
+    }
+  }
+}
+
+// try, catch and finally
+
+import java.util.Calendar
+
+val later = null
+val now = Calendar.getInstance()
+
+try {
+  now.compareTo(later)
+} catch {
+  case e: NullPointerException => println("One was null!")
+  case unknown => println("Unknown exception " + unknown)
+} finally {
+  println("It all worked out.")
+}
