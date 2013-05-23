@@ -110,6 +110,24 @@ case class Multiplier(m1: Quantity, m2: Quantity, mul: Quantity) extends Constra
   mul connect this
 }
 
+case class Divider(d1: Quantity, d2: Quantity, div: Quantity) extends Constraint {
+  def newValue = (d1.getValue, d2.getValue, div.getValue) match {
+    case (_, Some(x2), _) if x2 == 0 => error("Divider.division_by_zero") 
+    case (Some(x1), Some(x2), _) => div.setValue(x1 / x2, this)
+    case (Some(x1), _, Some(r))  => d2.setValue(r * x1, this)
+    case (_, Some(x2), Some(r))  => d1.setValue(r * x2, this)
+    case _ =>
+  }
+
+  def dropValue {
+    d1.forgetValue(this); d2.forgetValue(this); div.forgetValue(this)
+  }
+
+  d1 connect this
+  d2 connect this
+  div connect this
+}
+
 case class Constant(q: Quantity, v: Double) extends Constraint {
   def newValue: Unit = error("Constant.newValue")
   def dropValue: Unit = error("Constant.dropValue") 
@@ -186,6 +204,7 @@ val p1 = Probe("Celsius temp", C)
 val p2 = Probe("Fahrenheit temp", F)
 
 C setValue 25    // Probe: C: 25, F: 77
+C forgetValue
 F setValue 212   // Error! contradiction: 77 and 212
 
 // reusing

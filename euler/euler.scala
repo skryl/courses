@@ -529,6 +529,23 @@ def find_largest(tree: Node):Int = {
   sum_tree(tree)
 }
 
+// Problem 18: Counting Sundays
+// Ans: 
+
+
+type Date = (Int, Int, Int)
+def nextSunday(from: Calendar): Stream[Date] = {
+  (from.get(Calendar.YEAR), from.get(Calendar.MONTH), from.get(Calendar.DATE)) #:: 
+    nextSunday{cal.add(Calendar.DAY_OF_MONTH, 7); cal} 
+}
+
+val s = Calendar.getInstance()
+s.set(1900,1,1)
+
+nextSunday(s).filter(_._3 == 1).takeWhile(_._1 < 1901).size
+nextSunday(s).filter(_._3 == 1).takeWhile(_._1 < 2000).size
+
+
 
 // Problem 67: Large Maximal Path Sum
 // Ans:

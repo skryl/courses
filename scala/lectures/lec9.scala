@@ -90,18 +90,27 @@ abstract class Simulation {
   private var curtime = 0
   def currentTime: Int = curtime
 
+  private def insert(time: Int, item: WorkItem): Agenda = {
+    def ins(agenda: Agenda): Agenda = agenda match {
+      case Nil => item :: agenda
+      case x :: xs => if (time < x.time) item :: agenda else x :: ins(xs)
+    }
+    ins(agenda)
+  }
+
   def afterDelay(delay: Int)(block: => Unit): Unit = {
-    agenda = (WorkItem(curtime + delay, () => block) :: agenda).sortBy(_.time)
+    val time = curtime + delay
+    agenda = insert(time, WorkItem(time, () => block))
   }
 
   def next():Unit = { agenda match {
       case Nil => Nil
       case x :: xs => {
         agenda = xs
+        curtime = x.time
         x.action()
       }
     }
-    curtime += 1
   }
 
   def run(): Unit = {
@@ -197,16 +206,17 @@ object MySimulation extends BasicCircuitSimulation {
 
 object TestCircuit {
   import MySimulation._
-  val input1, input2, sum, carry = new Wire
-  probe("sum", sum)
-  probe("carry", carry)
 
-  halfAdder(input1, input2, sum, carry)
-  input1.setSignal(true)
-  input2.setSignal(true)
-  run()
+  def go: Unit = {
+    val input1, input2, sum, carry = new Wire
+    probe("sum", sum)
+    probe("carry", carry)
+
+    halfAdder(input1, input2, sum, carry)
+    input1.setSignal(true)
+    input2.setSignal(true)
+    run()
+  }
 }
 
-
-
-
+TestCircuit.go
