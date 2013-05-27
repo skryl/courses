@@ -14,6 +14,32 @@
 
 (map (lambda (x) (* x x)) '(1 2 3))
 
+// recursion through self application
+
+(lambda (n)
+  ((lambda (fact)
+    (fact fact n))
+  (lambda (ft k)
+    (if (= k 1)
+      1
+      (* k (ft ft (- k 1)))))))
+
+// more generally, the Y combinator, tada!
+
+(define Y
+  (lambda (f)
+    ((lambda (x) (x x))
+     (lambda (g)
+       (f (lambda args (apply (g g) args)))))))
+
+(define fac
+  (Y
+    (lambda (f)
+      (lambda (x)
+        (if (< x 2)
+            1
+            (* x (f (- x 1))))))))
+
 // scheme interpreter
 
 // internal representation
@@ -81,20 +107,10 @@ def string2lisp(s: String): Data = {
   parseExpr(it.next)
 }
 
-def lisp2string(l: Data): String = {
-  def parseList(l: Data): String = {
-    "(" + l.asInstanceOf[List[Data]].map(parseToken(_)).mkString(" ") + ")"
-  }
-
-  def parseToken(t: Data): String = {
-    t match {
-      case Symbol(n)     => n
-      case _: Int        => t.toString
-      case _: List[Data] => parseList(t)
-    }
-  }
-
-  parseList(l)
+def lisp2string(l: Data): String = l match {
+  case Symbol(n) => n
+  case _: Int    => l.toString
+  case x :: xs   => "(" + (x :: xs).map(lisp2string(_)).mkString(" ") + ")"
 }
 
 // def normalize(expr: Data): Data = expr match {
@@ -143,11 +159,6 @@ def eval(x: Data, env:Environment): Data = {
   def mkLambda(ps: List[String], body: Data, env: Environment) =
     Lambda { args => eval(body, env.extendMulti(ps, args)) }
 
-  def asList(x: Data): List[Data] = x match {
-    case xs: List[_] => xs
-    case _ => error("malformed list : " + x)
-  }
-
   def paramName(param: Data): String = param match {
     case Symbol(name) => name 
   }
@@ -170,6 +181,11 @@ def eval(x: Data, env:Environment): Data = {
   }
 }
 
+def asList(x: Data): List[Data] = x match {
+  case xs: List[_] => xs
+  case _ => error("malformed list : " + x)
+}
+
 val globalEnv = EmptyEnvironment.extend("=", Lambda{
   case List(arg1, arg2)                 => if(arg1 == arg2) 1 else 0}).extend("+", Lambda{
   case List(arg1: Int, arg2: Int)       => arg1 + arg2
@@ -183,14 +199,15 @@ val globalEnv = EmptyEnvironment.extend("=", Lambda{
   case List(Nil) => 1
   case _ => 0})
 
-def evaluate(x: Data): Data = eval(x, globalEnv)
-def evaluate(s: String): String = lisp2string(evaluate(string2lisp(s)))
+def evaluate(s: String): String = lisp2string(eval(string2lisp(s), globalEnv))
 
 def factDef = """
-  def factorial (lambda (n)
-    (if (= n 0) +
-      1 +
+  (def factorial (lambda (n)
+    (if (= n 0)
+      1
       (* n (factorial (- n 1)))))
+  (factorial 10))
 """
 
-evaluate(s"(${factDef} (factorial 4))")
+string2lisp(factDef)
+evaluate(factDef)
