@@ -66,6 +66,8 @@ List('factorial, 5')
 
 // the tokenizer
 
+// can we use a better type set?
+//
 type Data = Any
 
 class LispTokenizer(s: String) extends Iterator[String] {
@@ -148,11 +150,18 @@ val EmptyEnvironment = new Environment {
 }
 
 case class Lambda(f: List[Data] => Data)
+
+// example
 Lambda { case List(arg1: Int, arg2: Int) => arg1 * arg2 }
 
 def apply(fn: Data, args: List[Data]): Data = fn match {
   case Lambda(f) => f(args)
   case _ => error("applicatin of a non-function: " + fn + " to " + args)
+}
+
+def asList(x: Data): List[Data] = x match {
+  case xs: List[_] => xs
+  case _ => error("malformed list : " + x)
 }
 
 def eval(x: Data, env:Environment): Data = {
@@ -179,11 +188,6 @@ def eval(x: Data, env:Environment): Data = {
     case operator :: operands =>
       apply(eval(operator, env), operands map (x => eval(x, env)))
   }
-}
-
-def asList(x: Data): List[Data] = x match {
-  case xs: List[_] => xs
-  case _ => error("malformed list : " + x)
 }
 
 val globalEnv = EmptyEnvironment.extend("=", Lambda{
