@@ -4,15 +4,16 @@ import scala.annotation.tailrec
 //
 object BigInteger {
 
-  private def toList(n: String): List[Int] = n.toList.map(_.toString.toInt)
+  type BI = List[Int]
+  private def toList(n: String): BI = n.toList.map(_.toString.toInt)
 
-  private def _add(a: List[Int], b: List[Int]): List[Int] = {
+  private def _add(a: BI, b: BI): BI = {
     def adder(a: Int, b: Int, carry: Int): (Int, Int) = {
       val s = a + b + carry
       (s % 10, s / 10)
     }
 
-    @tailrec def recAdd(a: List[Int], b: List[Int], sum: List[Int], carry: Int): List[Int] = { 
+    @tailrec def recAdd(a: BI, b: BI, sum: BI, carry: Int): BI = { 
       (a,b) match {
         case (x :: xs, y :: ys) => {
           val (s, c) = adder(x, y, carry)
@@ -29,8 +30,9 @@ object BigInteger {
     recAdd(a.reverse, b.reverse, List(), 0)
   }
 
-  private def _sub(a: List[Int], b: List[Int]): List[Int] = {
-    @tailrec def compare(a: List[Int], b: List[Int], comp: Int): Int = (a,b) match {
+  private def _sub(a: BI, b: BI): BI = {
+
+    @tailrec def compare(a: BI, b: BI, comp: Int): Int = (a,b) match {
       case (Nil, Nil)  => comp
       case (Nil, y :: ys) => -1
       case (x :: xs, Nil) => 1
@@ -48,7 +50,7 @@ object BigInteger {
       (s, c)
     }
 
-    @tailrec def recSub(a: List[Int], b: List[Int], sum: List[Int], carry: Int): List[Int] = { 
+    @tailrec def recSub(a: BI, b: BI, sum: BI, carry: Int): BI = { 
       (a,b) match {
         case (x :: xs, y :: ys) => {  
           val (s, c) = subtractor(x, y, carry)
@@ -68,8 +70,10 @@ object BigInteger {
     ans.dropWhile(_ == 0)
   }
 
-  private def _cross_mul(a: List[Int], b: List[Int]): List[Int] = {
-    (for (bDig <- b.reverse) yield {
+  private def _cross_mul(a: BI, b: BI): BI = {
+    def shift(n: BI, i: Int): BI = n ++ List.fill(i)(0)
+
+    val parts = for (bDig <- b.reverse) yield {
       val partial = a.foldRight((List[Int](), 0)){ 
         case (aDig, (partial, carry)) => { 
           val r = aDig * bDig + carry
@@ -77,49 +81,54 @@ object BigInteger {
         }
       }
       partial._2 :: partial._1
-    }).reduceLeft((a, part) => _add(a, part))
+    }
+
+    parts.zipWithIndex.map{ case (p, i) => shift(p, i)}.reduceLeft(
+      (a: BI, p: BI) => _add(a, p)
+    ).dropWhile(_ == 0)
   }
 
-  private def _rec_mul(a: List[Int], b: List[Int]): List[Int]= {
-    def split(n: List[Int]) = n.splitAt(n.length / 2)
+  private def _rec_mul(a: BI, b: BI, karats: Boolean = true): BI= {
+    def split(n: BI, len: Int) = n.splitAt(n.length - (len / 2))
 
-    def padRight(n: List[Int], length: Int) = {
-      if (n.length == 0) n
-      else n.padTo(n.length + length, 0) 
+    def padRight(n: BI, length: Int) = {
+      val num = if (n.length == 0) n else n.padTo(n.length + length, 0) 
+      num.dropWhile(_ == 0)
     }
 
     // Polynomial Multiplication
     //
-    def mult_reg(a1: List[Int], a2: List[Int], b1: List[Int], b2: List[Int]) = {
+    def mult_reg(a1: BI, a2: BI, b1: BI, b2: BI): BI = {
       val z0 = padRight(mult(a1, b1), a2.length + b2.length)
       val z1 = padRight(mult(a1, b2), a2.length)
       val z2 = padRight(mult(a2, b1), b2.length)
       val z3 = mult(a2, b2)
-      // println(s"${z0.mkString} + ${z1.mkString} + ${z2.mkString} + ${z3.mkString}")
       _add(_add(z0, z1), _add(z2, z3))
     }
 
     // Karatsuba Multiplication
-    // FIXME: failed tests
-    def mult_karats(a1: List[Int], a2: List[Int], b1: List[Int], b2: List[Int]) = {
+    //
+    def mult_karats(a1: BI, a2: BI, b1: BI, b2: BI): BI = {
       val z0 = mult(a1, b1)
       val z1 = mult(a2, b2)
       val z2 = _sub(_sub(mult(_add(a1,a2), _add(b1,b2)), z0), z1)
-      _add(_add(padRight(z2, a2.length + b2.length), z0), padRight(z1, a1.length))
+      _add(_add(padRight(z0, a2.length + b2.length), padRight(z2, a2.length)), z1)
     }
 
-    def mult(a: List[Int], b: List[Int]): List[Int] = {
+    def mult(a: BI, b: BI): BI = {
       (a,b) match {
         case (x :: Nil, y :: Nil) => toList((x * y).toString)
         case (x :: Nil, y :: ys) => {
-          val (b1, b2) = split(b)
+          val (b1, b2) = split(b, b.length)
           _add(padRight(mult(a, b1), b2.length), mult(a, b2))
         }
         case (x :: xs, y :: Nil) => mult(b, a)
         case (x :: xs, y :: ys) => {
-          val (a1, a2) = split(a)
-          val (b1, b2) = split(b)
-          mult_karats(a1, a2, b1, b2)
+          val m = a.length min b.length
+          val (a1, a2) = split(a, m)
+          val (b1, b2) = split(b, m)
+          if (karats) mult_karats(a1, a2, b1, b2) 
+            else mult_reg(a1, a2, b1, b2)
         }
       }
     }
@@ -131,9 +140,9 @@ object BigInteger {
   //
   def add(a: String, b: String): String = _add(toList(a), toList(b)).mkString 
   def sub(a: String, b: String): String = _sub(toList(a), toList(b)).mkString
-  // FIXME: failed tests
   def cross_mul(a: String, b: String): String = _cross_mul(toList(a), toList(b)).mkString
-  def rec_mul(a: String, b: String): String = _rec_mul(toList(a), toList(b)).mkString
+  def rec_mulr(a: String, b: String): String = _rec_mul(toList(a), toList(b), false).mkString
+  def rec_mulk(a: String, b: String): String = _rec_mul(toList(a), toList(b), true).mkString
 }
 
 import BigInteger._
@@ -164,9 +173,9 @@ def time[A](a: => A) = {
 
 def test {
   for { i <- 0 to 10000 } {
-    val a = rand_bigint(50)
-    val b = rand_bigint(50)
-    val t = rec_mul(a,b)
+    val a = rand_bigint(5)
+    val b = rand_bigint(5)
+    val t = cross_mul(a,b)
     val r = big_mul(a,b)
 
     if (r != t) {
@@ -181,11 +190,17 @@ def test {
 def bench {
   val a = rand_bigint(50)
   val b = rand_bigint(50)
+  println(s"a = ${a}\nb = ${b}")
+
   println("time1:")
-  time { for (n <- (1 to 1000)) { rec_mul(a,b) } }
+  time { for (n <- (1 to 10000)) { big_mul(a,b) } }
   println("time2:")
-  time { for (n <- (1 to 1000)) { big_mul(a,b) } }
+  time { for (n <- (1 to 10000)) { rec_mulk(a,b) } }
+  println("time3:")
+  time { for (n <- (1 to 10000)) { rec_mulr(a,b) } }
+  println("time4:")
+  time { for (n <- (1 to 10000)) { cross_mul(a,b) } }
 }
 
-test
+// test
 bench
