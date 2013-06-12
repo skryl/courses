@@ -1,4 +1,7 @@
+:load bench.scala
 import scala.annotation.tailrec
+import java.util.Random
+import Bench._
 
 // Toy BigInt Implementation
 //
@@ -146,35 +149,26 @@ object BigInteger {
 }
 
 import BigInteger._
-import java.util.Random
 
 def big_add(a: String, b: String): String = (BigInt(a) + BigInt(b)).toString
 def big_sub(a: String, b: String): String = (BigInt(a) - BigInt(b)).abs.toString
 def big_mul(a: String, b: String): String = (BigInt(a) * BigInt(b)).toString
 
-def rand_bigint(maxlen: Int): String = {
+def randBigint(maxlen: Int): String = {
   val r = new Random
   val len = r.nextInt(maxlen)
 
-  if (len == 0) rand_bigint(maxlen)
+  if (len == 0) randBigint(maxlen)
   else {
     val num = List.fill(len)(0).map(i => r.nextInt(10)).dropWhile(_ == 0)
-    if (num.length > 0) num.mkString else rand_bigint(maxlen)
+    if (num.length > 0) num.mkString else randBigint(maxlen)
   }
-}
-
-def time[A](a: => A) = {
-  val now = System.nanoTime
-  val result = a
-  val micros = (System.nanoTime - now) / 1000
-  println("%d microseconds".format(micros))
-  result
 }
 
 def test {
   for { i <- 0 to 10000 } {
-    val a = rand_bigint(5)
-    val b = rand_bigint(5)
+    val a = randBigint(5)
+    val b = randBigint(5)
     val t = cross_mul(a,b)
     val r = big_mul(a,b)
 
@@ -188,18 +182,18 @@ def test {
 }
 
 def bench {
-  val a = rand_bigint(50)
-  val b = rand_bigint(50)
+  val a = randBigint(1000)
+  val b = randBigint(1000)
   println(s"a = ${a}\nb = ${b}")
 
   println("time1:")
-  time { for (n <- (1 to 10000)) { big_mul(a,b) } }
+  time { for (n <- (1 to 100)) { big_mul(a,b) } }
   println("time2:")
-  time { for (n <- (1 to 10000)) { rec_mulk(a,b) } }
+  time { for (n <- (1 to 100)) { rec_mulk(a,b) } }
   println("time3:")
-  time { for (n <- (1 to 10000)) { rec_mulr(a,b) } }
+  time { for (n <- (1 to 100)) { rec_mulr(a,b) } }
   println("time4:")
-  time { for (n <- (1 to 10000)) { cross_mul(a,b) } }
+  time { for (n <- (1 to 100)) { cross_mul(a,b) } }
 }
 
 // test
