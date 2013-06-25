@@ -91,7 +91,6 @@ def randList(maxlen: Int): List[Int]= {
   }
 }
 
-val size = 1000000
 def bench(size: Int) {
   val l = randList(size)
   val a = l.toArray
@@ -102,6 +101,8 @@ def bench(size: Int) {
   time { for (n <- (1 to 1)) { quicksort(l) } }
   println("quicksort fast:")
   time { for (n <- (1 to 1)) { quicksort_fast(a) } }
+  println("scala sort:")
+  time { for (n <- (1 to 1)) { l.sorted } }
 }
 
-// bench(10000)
+bench(1000000)
