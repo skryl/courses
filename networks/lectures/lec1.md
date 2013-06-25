@@ -1,6 +1,15 @@
 # Intro to Networks
 
 ## Reading
+*  1-1 Goals and Motivation. None.
+*  1-2 Uses of Networks. §1.1, loosely. 
+*  1-3 Network Components. §1.2, loosely. 
+*  1-4 Sockets. §1.3.4, and §6.1.2-6.1.4. “Beej’s Guide to Network Programming” 
+*  1-5 Traceroute. None. Many online pages and resources, e.g., Wikipedia, describe it. 
+*  1-6 Protocols and Layers. §1.3 
+*  1-7 Reference Models. §1.4, §1.6 
+*  1-8 History of the Internet. §1.5.1 
+*  1-9 Lecture Outline. None. 
 
 ## Exponential Value
 - The value of a network is proportional to its interconnectivity and

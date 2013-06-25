@@ -23,13 +23,14 @@ def quicksort(l: List[Int]): List[Int] = {
 // In-Place Quicksort
 //
 
-def partition_fast(a: Array[Int], start: Int, end: Int): Int = {
+def partition_fast(a: Array[Int], start: Int, end: Int, rand: Random): Int = {
   def swap(i1: Int, i2: Int) {
-    var tmp = a(i1)
+    val tmp = a(i1)
     a(i1) = a(i2)
     a(i2) = tmp
   }
 
+  swap(start, start + rand.nextInt(end - start + 1))
   var pvt_idx = start
   val pivot = a(start)
   for ( idx <- (start+1 to end) ) {
@@ -45,11 +46,12 @@ def partition_fast(a: Array[Int], start: Int, end: Int): Int = {
 }
 
 def quicksort_fast(a: Array[Int]): Array[Int] = {
+  val rand = new Random
   def qs(a: Array[Int], start: Int, end: Int): Array[Int] = {
-    if (end - start <= 1) a
+    if (end - start < 1) a
     else {
-      val pvt_idx = partition_fast(a, start, end)
-      qs(a, start, pvt_idx)
+      val pvt_idx = partition_fast(a, start, end, rand)
+      qs(a, start, pvt_idx-1)
       qs(a, pvt_idx+1, end)
     }
   }
@@ -92,17 +94,26 @@ def randList(maxlen: Int): List[Int]= {
 }
 
 def bench(size: Int) {
+  println("Generating...")
   val l = randList(size)
   val a = l.toArray
+  println(s"Size: ${l.size}")
 
+  println("Testing...")
+  val ref = a.sorted.toList
+  if (mergesort(l).toList == ref) { println("PASSED!") }
+  if (quicksort(l).toList == ref) { println("PASSED!") }
+  if (quicksort_fast(a).toList == ref) { println("PASSED!") }
+  
+  println("\nBenchmarking...")
   println("mergesort:")
-  time { for (n <- (1 to 1)) { mergesort(l) } }
+  time { for (n <- (1 to 1000)) { mergesort(l) } }
   println("quicksort:")
-  time { for (n <- (1 to 1)) { quicksort(l) } }
+  time { for (n <- (1 to 1000)) { quicksort(l) } }
   println("quicksort fast:")
-  time { for (n <- (1 to 1)) { quicksort_fast(a) } }
+  time { for (n <- (1 to 1000)) { quicksort_fast(a) } }
   println("scala sort:")
-  time { for (n <- (1 to 1)) { l.sorted } }
+  time { for (n <- (1 to 1000)) { a.sorted } }
 }
 
-bench(1000000)
+bench(100000)
