@@ -1,4 +1,4 @@
-# Intro to Networks
+# Week 1
 
 ## Reading
 *  1-1 Goals and Motivation. None.
