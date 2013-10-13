@@ -121,7 +121,7 @@ end;
        length day2 - day1 + 1 or length 0 if day1>day2.  *)
 
 fun month_range(day1 : int, day2 : int) =
-  if day1 >= day2 then []
+  if day1 > day2 then []
   else what_month(day1) :: month_range(day1+1, day2);
 
 (* --------------------------------------------------------------------------------- *)
@@ -148,23 +148,51 @@ fun oldest(dates : (int * int * int) list) =
        argument multiple times has no more eect than having it once. (Hint: Remove
        duplicates, then use previous work.) *)
 
-fun uniq(nums : int list) =
-  if null nums then []
-  else if null (tl nums) then nums
-  else let
-    val uniq_rest = uniq(tl nums)
-    val cur = hd nums
-    val next = hd uniq_rest
+
+(* Implementing modified merge-sort from scratch (not using built in list
+   functions). This version of merge sort eliminates duplicates during the merge
+   phase. *)
+
+fun length (lst) =
+  if null lst then 0
+  else 1 + length(tl lst);
+
+fun take (lst, count) =
+  if null lst orelse count = 0 then []
+  else hd lst :: take(tl lst, count - 1);
+
+fun drop (lst, count) =
+  if null lst orelse count = 0 then lst
+  else drop(tl lst, count - 1);
+
+fun merge_uniq(l1 : int list, l2 : int list) =
+  if null l1 then l2
+  else if null l2 then l1
+  else let 
+    val (h1, h2) = (hd l1, hd l2)
+    val (t1, t2) = (tl l1, tl l2)
   in
-    if cur = next then uniq_rest
-    else cur :: uniq_rest 
+    if h1 = h2 then h1 :: merge_uniq(t1, t2)
+    else if h1 < h2 then h1 :: merge_uniq(t1, l2)
+    else h2 :: merge_uniq(l1, t2)
   end;
 
+fun sort_uniq(lst : int list) =
+  if null lst then []
+  else if null (tl lst) then lst
+  else let 
+    val mid = length lst div 2
+  in
+    merge_uniq (sort_uniq (take (lst, mid)), sort_uniq (drop (lst, mid)))
+  end;
+
+(* call sort_uniq on month list before passing it off to previously defined functions *)
+
 fun number_in_months_challenge(dates : (int * int * int) list, months : int list) = 
-  number_in_months(dates, uniq(months));
+  number_in_months(dates, sort_uniq(months));
 
 fun dates_in_months_challenge(dates : (int * int * int) list, months : int list) = 
-  dates_in_months(dates, uniq(months));
+  dates_in_months(dates, sort_uniq(months));
 
 (* --------------------------------------------------------------------------------- *)
 
