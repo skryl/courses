@@ -2,9 +2,9 @@
 
 (* --------------------------------------------------------------------------------- *)
 
-(* 1. This problem involves using rst-name substitutions to come up with alternate names. For example,
+(* 1. This problem involves using first-name substitutions to come up with alternate names. For example,
       Fredrick William Smith could also be Fred William Smith or Freddie William Smith. Only part (d) is
-      specically about this, but the other problems are helpful. *)
+      specifically about this, but the other problems are helpful. *)
 
 fun same_string(s1 : string, s2 : string) = s1 = s2;
 
@@ -74,7 +74,7 @@ fun get_substitutions2(subs : string list list, name : string) =
 (* d. Write a function similar_names, which takes a string list list of substitutions (as in parts (b) and
      (c)) and a full name of type {first:string,middle:string,last:string} and returns a list of full
      names (type {first:string,middle:string,last:string} list). The result is all the full names you
-     can produce by substituting for the rst name (and only the rst name) using substitutions and parts (b)
+     can produce by substituting for the first name (and only the first name) using substitutions and parts (b)
      or (c). The answer should begin with the original name (then have 0 or more other names). Example:
 
        similar_names([["Fred","Fredrick"],["Elizabeth","Betty"],["Freddie","Fred","F"]], {first="Fred", middle="W", last="Smith"})
@@ -105,7 +105,7 @@ fun similar_names(subs : string list list, full_name) = case full_name of
       understanding the game if you wish.
 
       A game is played with a card-list and a goal. The player has a list of held-cards, initially empty. The player
-      makes a move by either drawing, which means removing the rst card in the card-list from the card-list and
+      makes a move by either drawing, which means removing the first card in the card-list from the card-list and
       adding it to the held-cards, or discarding, which means choosing one of the held-cards to remove. The game
       ends either when the player chooses to make no more moves or when the sum of the values of the held-cards
       is greater than the goal. *)
@@ -141,7 +141,7 @@ fun card_value(card : card) = case card of
 (* --------------------------------------------------------------------------------- *)
 
 (* c. Write a function remove_card, which takes a list of cards cs, a card c, and an exception e. It returns a
-      list that has all the elements of cs except c. If c is in the list more than once, remove only the rst one.
+      list that has all the elements of cs except c. If c is in the list more than once, remove only the first one.
       If c is not in the list, raise the exception e. You can compare cards with =. *)
 
 fun remove_card(cs : card list, c : card, e) = case cs of
@@ -196,7 +196,7 @@ fun score(cs : card list, goal : int) =
 
 (* g. Write a function officiate, which \runs a game." It takes a card list (the card-list) a move list
       (what the player \does" at each point), and an int (the goal) and returns the score at the end of the
-      game after processing (some or all of) the moves in the move list in order. Use a locally dened recursive
+      game after processing (some or all of) the moves in the move list in order. Use a locally defined recursive
       helper function that takes several arguments that together represent the current state of the game. As
       described above:
 
@@ -325,16 +325,15 @@ fun careful_player(deck : card list, goal : int) : move list =
       | c :: cs => let
             val cur_score = score(hand, goal)
             val cur_value = sum_cards(hand)
-            val (ratio, remain) = if cur_value = 0 then (11,0) 
-                                  else (goal div cur_value, goal mod cur_value)
+            val lookahead_value = cur_value + card_value(c)
           in 
             if cur_score = 0 then []
             else if cur_value > goal then []
-            else if (ratio > 10 orelse (ratio = 10 andalso remain > 0))
+            else if (goal - cur_value > 10)
               then Draw :: choose_cards(cs, c :: hand)
-            else (case can_discard(c :: hand, sum_cards(c :: hand) - goal) of
+            else (case can_discard(c :: hand, lookahead_value - goal) of
                 NONE    => [] 
-              | SOME(d) => Discard d :: choose_cards(cs, c :: hand)) 
+              | SOME(d) => Discard(d) :: (Draw :: choose_cards(cs, c :: hand))) 
           end
   in
     choose_cards(deck, [])

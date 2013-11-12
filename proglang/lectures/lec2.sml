@@ -68,7 +68,7 @@ fun max_constant exp =
     | Multiply(e1, e2) => biggest(e1, e2)
   end;
 
-(* type synonyms, just create a new name for an existing type *)
+(* type alias, just create a new name for an existing type *)
 
 type aname = t;
 

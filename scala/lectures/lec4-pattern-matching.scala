@@ -13,9 +13,9 @@ trait Function1[A,B] {
 
 // equivalent OO definition
 //
-{ class AnonFun extends Function1[Int, Int]
+ 
+class AnonFun extends Function1[Int, Int] {
   def apply(x: Int) = x * x
-  }
   new AnonFun
 }
 

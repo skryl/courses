@@ -106,3 +106,6 @@ officiate_challenge(deck, moves, 76) = 3;
 officiate_challenge(deck, moves, 77) = 0;
 officiate_challenge(deck, moves, 78) = 1;
 officiate_challenge(deck, moves, 79) = 2;
+
+val deck = [(Spades,Num 7),(Hearts,King),(Clubs,Ace),(Diamonds,Num 2)];
+careful_player(deck, 18);
