@@ -58,3 +58,70 @@
 (require rackunit/text-ui)
 ;; runs the test
 (run-tests tests)
+
+(test-case "examples from the lecture"
+    (check-equal? (fun-challenge-freevars
+      (compute-free-vars (fun #f "_" (add (add (var "x") (var "y")) (var "z")))))
+      (set "x" "y" "z"))
+    (check-equal? (fun-challenge-freevars
+      (compute-free-vars (fun #f "x" (add (add (var "x") (var "y")) (var "z")))))
+      (set "y" "z"))
+    (check-equal? (fun-challenge-freevars
+      (compute-free-vars (fun #f "x" (ifgreater (var "x") (aunit) (var "y") (var "z")))))
+      (set "y" "z"))
+    (check-equal? (fun-challenge-freevars
+      (compute-free-vars (fun #f "x"
+        (mlet "y" (int 0) (add (add (var "x") (var "y")) (var "z"))))))
+      (set "z"))
+    (check-equal? (fun-challenge-freevars
+      (compute-free-vars (fun #f "x" (fun #f "y" (fun #f "z"
+        (add (add (var "x") (var "y")) (var "z")))))))
+      (set))
+    (check-equal? (fun-challenge-freevars
+      (compute-free-vars (fun #f "x" 
+        (add (var "y")
+          (mlet "y" (var "z") (add (var "y") (var "y")))))))
+      (set "y" "z")))
+
+  (check-equal? (fun-challenge-freevars
+                  (compute-free-vars (fun #f "x" (apair (mlet "y" (int 0) (add (var "y") (var "x")))
+                                                        (var "y")))))
+                 (set "y"))
+   (check-equal? (fun-challenge-freevars
+                  (compute-free-vars (fun #f "x" (ifgreater (var "x")
+                                                            (int 0)
+                                                            (mlet "y" (int 1) (add (var "y") (int 1)))
+                                                            (var "y")))))
+                 (set "y"))
+
+   (check-equal? (eval-exp-c (call (fun "sum-1-n" "arg" 
+                                        (ifgreater (var "arg") (int 1)
+                                                   (add (var "arg") 
+                                                        (call 
+                                                         (var "sum-1-n") 
+                                                         (add (var "arg") (int -1))))
+                                                   (var "arg")))
+                                   (int 4))) (int 10) "call test 4")
+
+   (check-equal? (eval-exp-c (call
+                              (fun "fib" "n"
+                                   (call (call (call
+                                                (fun "aux" "n0" (fun #f "a" (fun #f "b"
+                                                                                 (ifgreater (add (var "n0") (int 1)) (var "n")
+                                                                                            (var "a")
+                                                                                            (call (call (call (var "aux") (add (var "n0") (int 1))) (var "b")) (add (var "a") (var "b")))))))
+                                                (int 0)) (int 0)) (int 1))) (int 7))) (int 13) "call test 5")
+
+(define expr (mlet "f2" (fun #f "y" (add (var "y") (int 1))) 
+                   (call (var "f2") 
+                         (call (fun #f "x" (add (var "x") (int 1))) 
+                               (int 2)))))
+
+(define expr2 (call (fun #f "x" (int 1)) (int 1)))
+
+(define fib
+  (fun "fib" "n"
+    (ifgreater (var "n") (int 2)
+      (add (call (var "fib") (add (var "n") (int -1)))
+           (call (var "fib") (add (var "n") (int -2))))
+      (int 1) )))
