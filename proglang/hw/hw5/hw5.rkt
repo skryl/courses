@@ -50,7 +50,6 @@
 (struct isaunit (e)                #:transparent) ;; evaluate to 1 if e is unit else 0
 (struct closure (env fun)          #:transparent) ;; a closure is not in "source" programs 
 
-
 ;; Problem 1
 
 ; (a) Write a Racket function racketlist->mupllist that takes a Racket list (presumably of mupl

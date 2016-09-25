@@ -25,7 +25,7 @@ def even_fib:Int= {
   val evenFib = fibFrom(1).filter(_ % 2 == 0)
   evenFib.takeWhile(_ < 4000000).sum
 }
-  
+
 // Problem 3: Largest Prime Factor of 600851475143
 // Ans: 6857
 //
@@ -39,12 +39,12 @@ def factor(n:BigInt):List[BigInt] = {
 
       var n = one
       var n1 = next(n, number)
-      
+
       while ((n1 - n).abs > one) {
         n = n1
         n1 = next(n, number)
       }
-       
+
       while (n1 * n1 > number) {
         n1 -= one
       }
@@ -64,7 +64,7 @@ def factor(n:BigInt):List[BigInt] = {
 // Ans: 906609
 //
 
-def palindrome = 
+def palindrome =
   (for {
     x <- (100 to 999)
     y <- (100 to 999)
@@ -73,7 +73,7 @@ def palindrome =
     if str == str.reverse
   } yield (prod)).max
 
-  
+
 // Problem 5: Smallest integer divisible by all numbers from 1 to 20
 // Ans: 232792560
 //
@@ -103,11 +103,11 @@ def prime_10_001:Int = {
 
   def next_prime(n:Int):Int = {
     val next = n + 1
-    if (isPrime(next)) next else next_prime(next)  
+    if (isPrime(next)) next else next_prime(next)
   }
 
   def find_primes(primes:List[Int]):List[Int] = {
-    if (primes.size == 10001) primes else 
+    if (primes.size == 10001) primes else
       find_primes(next_prime(primes.head) :: primes)
   }
 
@@ -153,7 +153,7 @@ def triplet(sum:Int):List[(Int,Int,Int)] =
     a <- (1 to sum)
     b <- (1 to (sum - a))
     c <- (1 to (sum - a - b))
-    if (a*a + b*b == c*c) && 
+    if (a*a + b*b == c*c) &&
        (a + b + c == sum) &&
        (a < b && b < c)
   } yield (a,b,c)).toList
@@ -167,7 +167,7 @@ def sum_primes_million:Int = {
 
   def next_prime(n:Int):Int = {
     val next = n + 1
-    if (isPrime(next)) next else next_prime(next)  
+    if (isPrime(next)) next else next_prime(next)
   }
 
   def find_primes(primes:List[Int]):List[Int] = {
@@ -212,19 +212,19 @@ def largest_product:Int = {
   def xflip(grid: Array[Array[Int]]): Array[Array[Int]] =
     ((grid transpose) map (_.reverse)) transpose
 
-  def xyflip(grid: Array[Array[Int]]): Array[Array[Int]] = 
+  def xyflip(grid: Array[Array[Int]]): Array[Array[Int]] =
     xflip(yflip(grid))
 
   val diag_coords = (0 until 20).map (x => (0 to x).map (y => (x-y,y)))
 
-  def diags(grid: Array[Array[Int]]): Array[Array[Int]] = 
+  def diags(grid: Array[Array[Int]]): Array[Array[Int]] =
     (diag_coords map (d => (d map (c => grid(c._2)(c._1))).toArray)).toArray
 
   val columns = rows.transpose
   val left_diags = (diags(rows).take(19) ++ diags(xyflip(rows)))
-  val right_diags = (diags(yflip(rows)).take(19) ++ diags(xflip(rows))) 
+  val right_diags = (diags(yflip(rows)).take(19) ++ diags(xflip(rows)))
 
-  (List(rows, columns, left_diags, right_diags) map 
+  (List(rows, columns, left_diags, right_diags) map
     (rot => (rot map (r => (r.sliding(4) map (_.product)).max)).max)).max
 }
 
@@ -249,7 +249,7 @@ def triangle_num = {
   }
 
   def isPrime(n:Int):Boolean = (2 to sqrt(n).toInt) forall (n % _ > 0)
-  
+
   def factor(n:Int):List[Int] = {
     if (isPrime(n)) List(n) else {
       val f = (2 to sqrt(n).toInt).find(f => isPrime(f) && (n % f == 0)).get
@@ -372,7 +372,7 @@ val nums = """
 72107838435069186155435662884062257473692284509516
 20849603980134001723930671666823555245252804609722
 53503534226472524250874054075591789781264330331690
-""".trim.split("\n") map (BigInt(_)) 
+""".trim.split("\n") map (BigInt(_))
 
 nums.sum
 
@@ -413,10 +413,10 @@ def longest_collatz:(Int,Int) = {
 
   longest
 }
-               
+
 // Problem 15: Lattice Paths
 // Ans: 137846528820
-// 
+//
 
 def lattice_paths(r:Int, c:Int):Long = {
   var cache:Map[(Int,Int),Long] = Map()
@@ -425,10 +425,10 @@ def lattice_paths(r:Int, c:Int):Long = {
     cache get (r,c) match {
       case Some(n) => n
       case None    => {
-        val num_paths = 
+        val num_paths =
           if (r == 0 && c == 0) 1
           else if (r == 0) count_paths(r, c - 1)
-          else if (c == 0) count_paths(r - 1, c) 
+          else if (c == 0) count_paths(r - 1, c)
           else count_paths(r - 1, c) + count_paths(r, c - 1)
         cache = cache + ((r,c) -> num_paths)
         num_paths
@@ -486,14 +486,14 @@ object Empty extends Node {
 
 def build_tree(tree: List[List[Int]]):NonEmpty = {
   val rev_tree = tree.reverse
-  val leafs = rev_tree.head.map (new NonEmpty(_, Empty, Empty)) 
+  val leafs = rev_tree.head.map (new NonEmpty(_, Empty, Empty))
 
   def make_tree(inputs: List[List[Int]], nodes: List[NonEmpty]):NonEmpty = nodes match {
     case List(n)  => n
-    case x :: xs  => { 
+    case x :: xs  => {
       val data = nodes.sliding(2).toList.zip(inputs.head).map{
-        case (leafs, elem) => new NonEmpty(elem, leafs(0), leafs(1)) }                                       
-      make_tree(inputs.tail, data) 
+        case (leafs, elem) => new NonEmpty(elem, leafs(0), leafs(1)) }
+      make_tree(inputs.tail, data)
     }
   }
 
@@ -507,12 +507,12 @@ def find_largest(tree: Node):Int = {
   var hitcount = 0
 
   def sum_tree(root: Node):Int = cache get root match {
-    case Some(s) => { 
+    case Some(s) => {
       hitcount += 1
       println("hit: " + hitcount)
-      s 
+      s
     }
-    case None => { 
+    case None => {
       val sum = root match {
         case Empty    => 0
         case NonEmpty(elem, left, right) => {
@@ -530,13 +530,13 @@ def find_largest(tree: Node):Int = {
 }
 
 // Problem 18: Counting Sundays
-// Ans: 
+// Ans:
 
 
 type Date = (Int, Int, Int)
 def nextSunday(from: Calendar): Stream[Date] = {
-  (from.get(Calendar.YEAR), from.get(Calendar.MONTH), from.get(Calendar.DATE)) #:: 
-    nextSunday{cal.add(Calendar.DAY_OF_MONTH, 7); cal} 
+  (from.get(Calendar.YEAR), from.get(Calendar.MONTH), from.get(Calendar.DATE)) #::
+    nextSunday{cal.add(Calendar.DAY_OF_MONTH, 7); cal}
 }
 
 val s = Calendar.getInstance()
@@ -557,17 +557,17 @@ val t = build_tree(input)
 find_largest(t)
 
 
+// Problem 31
+//
+def coins(amount: Int, denoms: List[Int]): Set[List[Int]] = {
+  if (amount == 0) Set(List())
+  else
+    for {
+      x <- denoms
+      y <- coins(amount - x, denoms.filter(_ <= amount))
+      if (x :: y).sum == amount
+    } yield x :: y
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
+coins(200, List(1, 2, 5, 10, 20, 50, 100, 200))
 
