@@ -4,12 +4,12 @@
 
 ; interleave sequences
 ;
-(defn inter [coll1 coll2] 
-  (loop [both [] c1 coll1 c2 coll2] 
+(defn inter [coll1 coll2]
+  (loop [both [] c1 coll1 c2 coll2]
     (if (or (empty? c1) (empty? c2))
       (into both (into c1 c2))
       (recur (conj both (first c1) (first c2)) (rest c1) (rest c2)))))
-    
+
 ; reducing empty collections
 ;
 (defn [& args] (if (empty? args) 0 (+ (first args) (last args))))
@@ -34,18 +34,18 @@
 (for [x (range 40)
             :when (= 1 (rem x 4 ))]
   x)
-  
+
 (for [x (iterate #(+ 4 %) 0)
             :let [z (inc x )]
             :while (< z 40)]
   z)
-  
+
 (for [[x y] (partition 2 (range 20))]
   (+ x y))
 
 ; default map values
 ;
-(defn defmap [dval coll] 
+(defn defmap [dval coll]
   (zipmap coll (repeat (count coll) dval)))
 
 ; palindromes

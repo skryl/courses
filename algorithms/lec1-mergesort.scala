@@ -27,11 +27,11 @@ def mergeAndCount(l1: List[Int], l2: List[Int], count: Int): (List[Int], Int) = 
   case (xs, Nil )    => (xs, count)
   case (Nil, ys)     => (ys, count)
   case (x :: xs, y :: ys) => {
-    if (x < y) { 
-      val (m, c) = mergeAndCount(xs, l2, count) 
+    if (x < y) {
+      val (m, c) = mergeAndCount(xs, l2, count)
       (x :: m, c)
     }
-    else { 
+    else {
       val (m, c) = mergeAndCount(l1, ys, count + l1.size)
       (y :: m, c)
     }
@@ -42,17 +42,17 @@ def count(l: List[Int]): (List[Int], Int) = l match {
   case x :: Nil => (l, 0)
   case x :: xs  => {
     val (left, right) = l.splitAt(l.length / 2)
-    val (l_sorted, l_count) = count(left) 
+    val (l_sorted, l_count) = count(left)
     val (r_sorted, r_count) = count(right)
     mergeAndCount(l_sorted, r_sorted, l_count + r_count)
   }
-}                                    
+}
 
 // 1-d closest points
 //
 def closest1d(points: List[Int]): List[Int] = {
-  sort(points).sliding(2).reduce { (smallest, pair) => 
-    if ((pair(1) - pair(0)) < (smallest(1) - smallest(0))) pair else smallest 
+  sort(points).sliding(2).reduce { (smallest, pair) =>
+    if ((pair(1) - pair(0)) < (smallest(1) - smallest(0))) pair else smallest
   }
 }
 
@@ -81,9 +81,9 @@ def closestSplit(sorted_x: List[Point], sorted_y: List[Point], delta: Double): D
 }
 
 def closestFast(points: List[Point]): Double = points match {
-  case p1 :: p2 :: Nil => 
+  case p1 :: p2 :: Nil =>
     dist(p1, p2)
-  case p1 :: p2 :: p3 :: Nil => 
+  case p1 :: p2 :: p3 :: Nil =>
     dist(p1, p2) min dist(p1, p3) min dist(p2, p3)
   case _            => {
     val sorted_x = points.sortBy{ case (x, y) => x }

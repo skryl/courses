@@ -16,7 +16,7 @@ object BigInteger {
       (s % 10, s / 10)
     }
 
-    @tailrec def recAdd(a: BI, b: BI, sum: BI, carry: Int): BI = { 
+    @tailrec def recAdd(a: BI, b: BI, sum: BI, carry: Int): BI = {
       (a,b) match {
         case (x :: xs, y :: ys) => {
           val (s, c) = adder(x, y, carry)
@@ -41,8 +41,8 @@ object BigInteger {
       case (x :: xs, Nil) => 1
       case (x :: xs, y :: ys) => {
         val comp1 = x.compareTo(y)
-        if (comp1 == 0) compare(xs, ys, comp) 
-        else compare(xs, ys, comp1) 
+        if (comp1 == 0) compare(xs, ys, comp)
+        else compare(xs, ys, comp1)
       }
     }
 
@@ -53,14 +53,14 @@ object BigInteger {
       (s, c)
     }
 
-    @tailrec def recSub(a: BI, b: BI, sum: BI, carry: Int): BI = { 
+    @tailrec def recSub(a: BI, b: BI, sum: BI, carry: Int): BI = {
       (a,b) match {
-        case (x :: xs, y :: ys) => {  
+        case (x :: xs, y :: ys) => {
           val (s, c) = subtractor(x, y, carry)
-          recSub(xs, ys, s :: sum, c) } 
+          recSub(xs, ys, s :: sum, c) }
         case (x :: xs, Nil) => {
           val (s, c) = subtractor(x, 0, carry)
-          recSub(xs, Nil, s :: sum, c) } 
+          recSub(xs, Nil, s :: sum, c) }
         case (Nil, Nil) => sum
       }
     }
@@ -77,10 +77,10 @@ object BigInteger {
     def shift(n: BI, i: Int): BI = n ++ List.fill(i)(0)
 
     val parts = for (bDig <- b.reverse) yield {
-      val partial = a.foldRight((List[Int](), 0)){ 
-        case (aDig, (partial, carry)) => { 
+      val partial = a.foldRight((List[Int](), 0)){
+        case (aDig, (partial, carry)) => {
           val r = aDig * bDig + carry
-          (r % 10 :: partial, r / 10) 
+          (r % 10 :: partial, r / 10)
         }
       }
       partial._2 :: partial._1
@@ -95,7 +95,7 @@ object BigInteger {
     def split(n: BI, len: Int) = n.splitAt(n.length - (len / 2))
 
     def padRight(n: BI, length: Int) = {
-      val num = if (n.length == 0) n else n.padTo(n.length + length, 0) 
+      val num = if (n.length == 0) n else n.padTo(n.length + length, 0)
       num.dropWhile(_ == 0)
     }
 
@@ -130,7 +130,7 @@ object BigInteger {
           val m = a.length min b.length
           val (a1, a2) = split(a, m)
           val (b1, b2) = split(b, m)
-          if (karats) mult_karats(a1, a2, b1, b2) 
+          if (karats) mult_karats(a1, a2, b1, b2)
             else mult_reg(a1, a2, b1, b2)
         }
       }
@@ -141,7 +141,7 @@ object BigInteger {
 
   // Interface
   //
-  def add(a: String, b: String): String = _add(toList(a), toList(b)).mkString 
+  def add(a: String, b: String): String = _add(toList(a), toList(b)).mkString
   def sub(a: String, b: String): String = _sub(toList(a), toList(b)).mkString
   def cross_mul(a: String, b: String): String = _cross_mul(toList(a), toList(b)).mkString
   def rec_mulr(a: String, b: String): String = _rec_mul(toList(a), toList(b), false).mkString

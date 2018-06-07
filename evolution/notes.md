@@ -1,4 +1,4 @@
-# EEB 122 - Evolution, Ecology and Behavior 
+# EEB 122 - Evolution, Ecology and Behavior
 
 ## Lecture 1 - The Nature of Evolution
 
@@ -306,7 +306,7 @@
     and the high cost of errors due to accumulation, form matches function very
     closely as a result of co adaptation between the different structures
 
-  * The integration of an organism is achieved by the coadaptation of it's parts 
+  * The integration of an organism is achieved by the coadaptation of it's parts
 
   * Principles determining levels of co-adaptation
     1. Frequency of interaction
@@ -326,7 +326,7 @@
     supported by the fact that the long term extinction rate has stayed constant.
 
 ## Lecture 21 - Evolutionary Medicine
-            
+
 ### Resources
   * yale.edu/evomedsymposia/
   * Book: Evolution in Health and Disease
@@ -354,7 +354,7 @@
     potentially overreact to simple infections.
   * Therapy with parasitic worms has led to significant improvements for people
     with various autoimmune diseases.
-    
+
   * Humans evolve more slowly than their cultures, therefore they are mismatched
     to modern life. Mismatches to both diet and hygiene have led to serious
     medical problems.
@@ -371,7 +371,7 @@
   2. the parasite has just established itself in a new host species and is far
      from the optimal virulence. Ex. HIV, myxoma virus
   3. the parasite is established in a host species and evolves in response to
-     changes in the virulence optimum. Ex. Tuberculosis, Malaria, 
+     changes in the virulence optimum. Ex. Tuberculosis, Malaria,
 
   * Virulence/Transmission Tradeoff: Killing a host too fast is counterproductive
     since the virus doesn't get a chance to spread. Many Phase 1 viruses exhibit
@@ -423,7 +423,7 @@ Examples:
     - Outrage at defection
     - Desire for revenge
     - Impulse to conform
-      
+
   * Genes use hormones to create emotions that manipulate our phenotypes. Those
     emotions become the biological handles on which culture pulls. Our minds are
     not blank slates. Some of our programming is for social interactions.
@@ -498,7 +498,7 @@ Examples:
     - Maximum diversity exists at a medium level of dispersal.
 
 ## Lecture 29 - Island Biogeography and Invasive Species
-  
+
   * References
     * Nietzche - The Birth of Tradgedy
 

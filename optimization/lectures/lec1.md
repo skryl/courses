@@ -1,12 +1,12 @@
-Dynamic Programming
+# Dynamic Programming
 - divide and conquer
 - bottom up computation
 
-Branch and Bound
+# Branch and Bound
 - branching (exhaustive search)
 - bounding (find optimistic estimate)
   * relaxation (remove a constraint)
 
-Relaxation
+# Relaxation
 - Constraint Relaxation
 - Linear Relaxation
