@@ -22,7 +22,7 @@
   @SP
   M=M+1
 
-  // pop value from stack into @arg1
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -30,10 +30,10 @@
   A=M
   D=M
 
-  @arg1
+  @R13
   M=D
 
-  // pop value from stack into @arg2
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -41,25 +41,25 @@
   A=M
   D=M
 
-  @arg2
+  @R14
   M=D
 
-  // op values in arg1 and arg2 and put result in arg1
+  // add values in temp registers R13 and R14 and put result into R13
   //
 
-  @arg1
+  @R13
   D=M
 
-  @arg2
-  D=D+M
+  @R14
+  D=M+D
 
-  @arg1
+  @R13
   M=D
 
-  // push arg1 to stack
+  // push temp register @R{12+n} to stack
   //
 
-  @arg1
+  @R13
   D=M
 
   @SP

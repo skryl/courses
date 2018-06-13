@@ -10,11 +10,11 @@ defimpl Command, for: ArithmeticCommand do
   @commands_comp   [:eq, :gt, :lt]
 
 
-  def to_asm(%ArithmeticCommand{ name: cmd }) do
+  def to_asm(%ArithmeticCommand{ name: cmd }, line_num) do
     case cmd do
-      n when n in @commands_binary -> pop(2) |> op(cmd) |> push(1)
-      n when n in @commands_comp   -> pop(2) |> op(cmd) |> push(1)
-      n when n in @commands_unary  -> pop(1) |> op(cmd) |> push(1)
+      n when n in @commands_binary -> pop(2) |> op(cmd, line_num) |> push(1)
+      n when n in @commands_comp   -> pop(2) |> op(cmd, line_num) |> push(1)
+      n when n in @commands_unary  -> pop(1) |> op(cmd, line_num) |> push(1)
     end
   end
 
@@ -26,7 +26,7 @@ defimpl Command, for: ArithmeticCommand do
 
   def pop(stream, num) do
     asm = Enum.map 1..num, fn n -> """
-      // pop value from stack into @arg#{n}
+      // pop value from stack into temp register @R{12+n}
       //
 
       @SP
@@ -34,7 +34,7 @@ defimpl Command, for: ArithmeticCommand do
       A=M
       D=M
 
-      @arg#{n}
+      @R#{12+n}
       M=D
     """
     end
@@ -45,10 +45,10 @@ defimpl Command, for: ArithmeticCommand do
 
   def push(stream, num) do
     asm = Enum.map 1..num, fn n -> """
-      // push arg#{n} to stack
+      // push temp register @R{12+n} to stack
       //
 
-      @arg#{n}
+      @R#{12+n}
       D=M
 
       @SP
@@ -64,7 +64,7 @@ defimpl Command, for: ArithmeticCommand do
   end
 
 
-  def op(stream, cmd) when cmd in @commands_binary do
+  def op(stream, cmd, line_num) when cmd in @commands_binary do
     asm_op = case cmd do
       :add -> "+"
       :sub -> "-"
@@ -73,16 +73,16 @@ defimpl Command, for: ArithmeticCommand do
     end
 
     asm = """
-      // #{cmd} values in arg1 and arg2 and put result in arg1
+      // #{cmd} values in temp registers R13 and R14 and put result into R13
       //
 
-      @arg1
+      @R13
       D=M
 
-      @arg2
-      D=D#{asm_op}M
+      @R14
+      D=M#{asm_op}D
 
-      @arg1
+      @R13
       M=D
     """
 
@@ -90,17 +90,17 @@ defimpl Command, for: ArithmeticCommand do
   end
 
 
-  def op(stream, cmd) when cmd in @commands_unary do
+  def op(stream, cmd, line_num) when cmd in @commands_unary do
     asm_op = case cmd do
       :neg -> "-"
       :not -> "!"
     end
 
     asm = """
-      // #{cmd} value in arg1 and put result in arg1
+      // #{cmd} value in R13 and put result into R13
       //
 
-      @arg1
+      @R13
       D=M
       D=#{asm_op}D
       M=D
@@ -110,7 +110,7 @@ defimpl Command, for: ArithmeticCommand do
   end
 
 
-  def op(stream, cmd) when cmd in @commands_comp do
+  def op(stream, cmd, line_num) when cmd in @commands_comp do
     asm_op = case cmd do
       :eq  -> "EQ"
       :gt  -> "GT"
@@ -118,26 +118,26 @@ defimpl Command, for: ArithmeticCommand do
     end
 
     asm = """
-      // #{cmd} values in arg1 and arg2 and put result in arg1
+      // #{cmd} values in R13 and R14 and put result into R13
       //
 
-      @arg1
+      @R13
       D=M
 
-      @arg2
-      D=D-M
+      @R14
+      D=M-D
 
-      @TRUE
+      @TRUE.#{line_num}
       D;J#{asm_op}
-      (FALSE)
+      (FALSE.#{line_num})
       D=0
-      @END
+      @END.#{line_num}
       0;JMP
-      (TRUE)
+      (TRUE.#{line_num})
       D=-1
-      (END)
+      (END.#{line_num})
 
-      @arg1
+      @R13
       M=D
     """
 

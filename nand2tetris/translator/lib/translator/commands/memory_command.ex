@@ -7,13 +7,14 @@ defimpl Command, for: MemoryCommand do
   @segment_map %{ constant: "0",
                   pointer:  "3",
                   temp:     "5",
+                  static:   "16",
                   local:    "LCL",
                   argument: "ARG",
                   this:     "THIS",
                   that:     "THAT" }
 
 
-  def to_asm(%MemoryCommand{ name: cmd, segment: seg, index: idx }) do
+  def to_asm(%MemoryCommand{ name: cmd, segment: seg, index: idx }, line_num) do
     case cmd do
       :push -> push(seg, idx)
       :pop  -> pop(seg, idx)
@@ -32,7 +33,7 @@ defimpl Command, for: MemoryCommand do
 
     mem_load = """
       @#{@segment_map[seg]}
-      A=A+D
+      A=#{indirect?(seg) && "M" || "A"}+D
       D=M
     """
 
@@ -56,19 +57,35 @@ defimpl Command, for: MemoryCommand do
       // pop value from stack into segment[offset]
       //
 
+      @#{offset}
+      D=A
+      @#{@segment_map[seg]}
+      D=#{indirect?(seg) && "M" || "A"}+D
+      @R13
+      M=D
+
       @SP
       M=M-1
       A=M
       D=M
 
-      @#{offset}
-      D=A
-      @#{@segment_map[seg]}
-      A=A+D
-      D=M
+      @R13
+      A=M
+      M=D
     """
 
     [asm]
+  end
+
+
+  defp indirect?(seg) do
+    try do
+      addr = @segment_map[seg]
+      String.to_integer(addr)
+      false
+    rescue
+      ArgumentError -> true
+    end
   end
 
 end

@@ -3,7 +3,7 @@ defmodule FunctionCommand do
 
   defimpl Command, for: FunctionCommand do
 
-    def to_asm(command) do
+    def to_asm(command, line_num) do
       String.upcase command.name
     end
 

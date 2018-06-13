@@ -22,7 +22,7 @@
   @SP
   M=M+1
 
-  // pop value from stack into @arg1
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -30,10 +30,10 @@
   A=M
   D=M
 
-  @arg1
+  @R13
   M=D
 
-  // pop value from stack into @arg2
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -41,35 +41,35 @@
   A=M
   D=M
 
-  @arg2
+  @R14
   M=D
 
-  // eq values in arg1 and arg2 and put result in arg1
+  // eq values in R13 and R14 and put result into R13
   //
 
-  @arg1
+  @R13
   D=M
 
-  @arg2
-  D=D-M
+  @R14
+  D=M-D
 
-  @TRUE
+  @TRUE.2
   D;JEQ
-  (FALSE)
+  (FALSE.2)
   D=0
-  @END
+  @END.2
   0;JMP
-  (TRUE)
+  (TRUE.2)
   D=-1
-  (END)
+  (END.2)
 
-  @arg1
+  @R13
   M=D
 
-  // push arg1 to stack
+  // push temp register @R{12+n} to stack
   //
 
-  @arg1
+  @R13
   D=M
 
   @SP
@@ -103,7 +103,7 @@
   @SP
   M=M+1
 
-  // pop value from stack into @arg1
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -111,10 +111,10 @@
   A=M
   D=M
 
-  @arg1
+  @R13
   M=D
 
-  // pop value from stack into @arg2
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -122,35 +122,35 @@
   A=M
   D=M
 
-  @arg2
+  @R14
   M=D
 
-  // eq values in arg1 and arg2 and put result in arg1
+  // eq values in R13 and R14 and put result into R13
   //
 
-  @arg1
+  @R13
   D=M
 
-  @arg2
-  D=D-M
+  @R14
+  D=M-D
 
-  @TRUE
+  @TRUE.5
   D;JEQ
-  (FALSE)
+  (FALSE.5)
   D=0
-  @END
+  @END.5
   0;JMP
-  (TRUE)
+  (TRUE.5)
   D=-1
-  (END)
+  (END.5)
 
-  @arg1
+  @R13
   M=D
 
-  // push arg1 to stack
+  // push temp register @R{12+n} to stack
   //
 
-  @arg1
+  @R13
   D=M
 
   @SP
@@ -184,7 +184,7 @@
   @SP
   M=M+1
 
-  // pop value from stack into @arg1
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -192,10 +192,10 @@
   A=M
   D=M
 
-  @arg1
+  @R13
   M=D
 
-  // pop value from stack into @arg2
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -203,35 +203,35 @@
   A=M
   D=M
 
-  @arg2
+  @R14
   M=D
 
-  // eq values in arg1 and arg2 and put result in arg1
+  // eq values in R13 and R14 and put result into R13
   //
 
-  @arg1
+  @R13
   D=M
 
-  @arg2
-  D=D-M
+  @R14
+  D=M-D
 
-  @TRUE
+  @TRUE.8
   D;JEQ
-  (FALSE)
+  (FALSE.8)
   D=0
-  @END
+  @END.8
   0;JMP
-  (TRUE)
+  (TRUE.8)
   D=-1
-  (END)
+  (END.8)
 
-  @arg1
+  @R13
   M=D
 
-  // push arg1 to stack
+  // push temp register @R{12+n} to stack
   //
 
-  @arg1
+  @R13
   D=M
 
   @SP
@@ -265,7 +265,7 @@
   @SP
   M=M+1
 
-  // pop value from stack into @arg1
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -273,10 +273,10 @@
   A=M
   D=M
 
-  @arg1
+  @R13
   M=D
 
-  // pop value from stack into @arg2
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -284,35 +284,35 @@
   A=M
   D=M
 
-  @arg2
+  @R14
   M=D
 
-  // lt values in arg1 and arg2 and put result in arg1
+  // lt values in R13 and R14 and put result into R13
   //
 
-  @arg1
+  @R13
   D=M
 
-  @arg2
-  D=D-M
+  @R14
+  D=M-D
 
-  @TRUE
+  @TRUE.11
   D;JLT
-  (FALSE)
+  (FALSE.11)
   D=0
-  @END
+  @END.11
   0;JMP
-  (TRUE)
+  (TRUE.11)
   D=-1
-  (END)
+  (END.11)
 
-  @arg1
+  @R13
   M=D
 
-  // push arg1 to stack
+  // push temp register @R{12+n} to stack
   //
 
-  @arg1
+  @R13
   D=M
 
   @SP
@@ -346,7 +346,7 @@
   @SP
   M=M+1
 
-  // pop value from stack into @arg1
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -354,10 +354,10 @@
   A=M
   D=M
 
-  @arg1
+  @R13
   M=D
 
-  // pop value from stack into @arg2
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -365,35 +365,35 @@
   A=M
   D=M
 
-  @arg2
+  @R14
   M=D
 
-  // lt values in arg1 and arg2 and put result in arg1
+  // lt values in R13 and R14 and put result into R13
   //
 
-  @arg1
+  @R13
   D=M
 
-  @arg2
-  D=D-M
+  @R14
+  D=M-D
 
-  @TRUE
+  @TRUE.14
   D;JLT
-  (FALSE)
+  (FALSE.14)
   D=0
-  @END
+  @END.14
   0;JMP
-  (TRUE)
+  (TRUE.14)
   D=-1
-  (END)
+  (END.14)
 
-  @arg1
+  @R13
   M=D
 
-  // push arg1 to stack
+  // push temp register @R{12+n} to stack
   //
 
-  @arg1
+  @R13
   D=M
 
   @SP
@@ -427,7 +427,7 @@
   @SP
   M=M+1
 
-  // pop value from stack into @arg1
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -435,10 +435,10 @@
   A=M
   D=M
 
-  @arg1
+  @R13
   M=D
 
-  // pop value from stack into @arg2
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -446,35 +446,35 @@
   A=M
   D=M
 
-  @arg2
+  @R14
   M=D
 
-  // lt values in arg1 and arg2 and put result in arg1
+  // lt values in R13 and R14 and put result into R13
   //
 
-  @arg1
+  @R13
   D=M
 
-  @arg2
-  D=D-M
+  @R14
+  D=M-D
 
-  @TRUE
+  @TRUE.17
   D;JLT
-  (FALSE)
+  (FALSE.17)
   D=0
-  @END
+  @END.17
   0;JMP
-  (TRUE)
+  (TRUE.17)
   D=-1
-  (END)
+  (END.17)
 
-  @arg1
+  @R13
   M=D
 
-  // push arg1 to stack
+  // push temp register @R{12+n} to stack
   //
 
-  @arg1
+  @R13
   D=M
 
   @SP
@@ -508,7 +508,7 @@
   @SP
   M=M+1
 
-  // pop value from stack into @arg1
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -516,10 +516,10 @@
   A=M
   D=M
 
-  @arg1
+  @R13
   M=D
 
-  // pop value from stack into @arg2
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -527,35 +527,35 @@
   A=M
   D=M
 
-  @arg2
+  @R14
   M=D
 
-  // gt values in arg1 and arg2 and put result in arg1
+  // gt values in R13 and R14 and put result into R13
   //
 
-  @arg1
+  @R13
   D=M
 
-  @arg2
-  D=D-M
+  @R14
+  D=M-D
 
-  @TRUE
+  @TRUE.20
   D;JGT
-  (FALSE)
+  (FALSE.20)
   D=0
-  @END
+  @END.20
   0;JMP
-  (TRUE)
+  (TRUE.20)
   D=-1
-  (END)
+  (END.20)
 
-  @arg1
+  @R13
   M=D
 
-  // push arg1 to stack
+  // push temp register @R{12+n} to stack
   //
 
-  @arg1
+  @R13
   D=M
 
   @SP
@@ -589,7 +589,7 @@
   @SP
   M=M+1
 
-  // pop value from stack into @arg1
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -597,10 +597,10 @@
   A=M
   D=M
 
-  @arg1
+  @R13
   M=D
 
-  // pop value from stack into @arg2
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -608,35 +608,35 @@
   A=M
   D=M
 
-  @arg2
+  @R14
   M=D
 
-  // gt values in arg1 and arg2 and put result in arg1
+  // gt values in R13 and R14 and put result into R13
   //
 
-  @arg1
+  @R13
   D=M
 
-  @arg2
-  D=D-M
+  @R14
+  D=M-D
 
-  @TRUE
+  @TRUE.23
   D;JGT
-  (FALSE)
+  (FALSE.23)
   D=0
-  @END
+  @END.23
   0;JMP
-  (TRUE)
+  (TRUE.23)
   D=-1
-  (END)
+  (END.23)
 
-  @arg1
+  @R13
   M=D
 
-  // push arg1 to stack
+  // push temp register @R{12+n} to stack
   //
 
-  @arg1
+  @R13
   D=M
 
   @SP
@@ -670,7 +670,7 @@
   @SP
   M=M+1
 
-  // pop value from stack into @arg1
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -678,10 +678,10 @@
   A=M
   D=M
 
-  @arg1
+  @R13
   M=D
 
-  // pop value from stack into @arg2
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -689,35 +689,35 @@
   A=M
   D=M
 
-  @arg2
+  @R14
   M=D
 
-  // gt values in arg1 and arg2 and put result in arg1
+  // gt values in R13 and R14 and put result into R13
   //
 
-  @arg1
+  @R13
   D=M
 
-  @arg2
-  D=D-M
+  @R14
+  D=M-D
 
-  @TRUE
+  @TRUE.26
   D;JGT
-  (FALSE)
+  (FALSE.26)
   D=0
-  @END
+  @END.26
   0;JMP
-  (TRUE)
+  (TRUE.26)
   D=-1
-  (END)
+  (END.26)
 
-  @arg1
+  @R13
   M=D
 
-  // push arg1 to stack
+  // push temp register @R{12+n} to stack
   //
 
-  @arg1
+  @R13
   D=M
 
   @SP
@@ -763,7 +763,7 @@
   @SP
   M=M+1
 
-  // pop value from stack into @arg1
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -771,10 +771,10 @@
   A=M
   D=M
 
-  @arg1
+  @R13
   M=D
 
-  // pop value from stack into @arg2
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -782,25 +782,25 @@
   A=M
   D=M
 
-  @arg2
+  @R14
   M=D
 
-  // add values in arg1 and arg2 and put result in arg1
+  // add values in temp registers R13 and R14 and put result into R13
   //
 
-  @arg1
+  @R13
   D=M
 
-  @arg2
-  D=D+M
+  @R14
+  D=M+D
 
-  @arg1
+  @R13
   M=D
 
-  // push arg1 to stack
+  // push temp register @R{12+n} to stack
   //
 
-  @arg1
+  @R13
   D=M
 
   @SP
@@ -822,7 +822,7 @@
   @SP
   M=M+1
 
-  // pop value from stack into @arg1
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -830,10 +830,10 @@
   A=M
   D=M
 
-  @arg1
+  @R13
   M=D
 
-  // pop value from stack into @arg2
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -841,25 +841,25 @@
   A=M
   D=M
 
-  @arg2
+  @R14
   M=D
 
-  // sub values in arg1 and arg2 and put result in arg1
+  // sub values in temp registers R13 and R14 and put result into R13
   //
 
-  @arg1
+  @R13
   D=M
 
-  @arg2
-  D=D-M
+  @R14
+  D=M-D
 
-  @arg1
+  @R13
   M=D
 
-  // push arg1 to stack
+  // push temp register @R{12+n} to stack
   //
 
-  @arg1
+  @R13
   D=M
 
   @SP
@@ -869,7 +869,7 @@
   @SP
   M=M+1
 
-  // pop value from stack into @arg1
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -877,21 +877,21 @@
   A=M
   D=M
 
-  @arg1
+  @R13
   M=D
 
-  // neg value in arg1 and put result in arg1
+  // neg value in R13 and put result into R13
   //
 
-  @arg1
+  @R13
   D=M
   D=-D
   M=D
 
-  // push arg1 to stack
+  // push temp register @R{12+n} to stack
   //
 
-  @arg1
+  @R13
   D=M
 
   @SP
@@ -901,7 +901,7 @@
   @SP
   M=M+1
 
-  // pop value from stack into @arg1
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -909,10 +909,10 @@
   A=M
   D=M
 
-  @arg1
+  @R13
   M=D
 
-  // pop value from stack into @arg2
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -920,25 +920,25 @@
   A=M
   D=M
 
-  @arg2
+  @R14
   M=D
 
-  // and values in arg1 and arg2 and put result in arg1
+  // and values in temp registers R13 and R14 and put result into R13
   //
 
-  @arg1
+  @R13
   D=M
 
-  @arg2
-  D=D&M
+  @R14
+  D=M&D
 
-  @arg1
+  @R13
   M=D
 
-  // push arg1 to stack
+  // push temp register @R{12+n} to stack
   //
 
-  @arg1
+  @R13
   D=M
 
   @SP
@@ -960,7 +960,7 @@
   @SP
   M=M+1
 
-  // pop value from stack into @arg1
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -968,10 +968,10 @@
   A=M
   D=M
 
-  @arg1
+  @R13
   M=D
 
-  // pop value from stack into @arg2
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -979,25 +979,25 @@
   A=M
   D=M
 
-  @arg2
+  @R14
   M=D
 
-  // or values in arg1 and arg2 and put result in arg1
+  // or values in temp registers R13 and R14 and put result into R13
   //
 
-  @arg1
+  @R13
   D=M
 
-  @arg2
-  D=D|M
+  @R14
+  D=M|D
 
-  @arg1
+  @R13
   M=D
 
-  // push arg1 to stack
+  // push temp register @R{12+n} to stack
   //
 
-  @arg1
+  @R13
   D=M
 
   @SP
@@ -1007,7 +1007,7 @@
   @SP
   M=M+1
 
-  // pop value from stack into @arg1
+  // pop value from stack into temp register @R{12+n}
   //
 
   @SP
@@ -1015,21 +1015,21 @@
   A=M
   D=M
 
-  @arg1
+  @R13
   M=D
 
-  // not value in arg1 and put result in arg1
+  // not value in R13 and put result into R13
   //
 
-  @arg1
+  @R13
   D=M
   D=!D
   M=D
 
-  // push arg1 to stack
+  // push temp register @R{12+n} to stack
   //
 
-  @arg1
+  @R13
   D=M
 
   @SP

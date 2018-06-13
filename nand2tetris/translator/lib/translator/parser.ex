@@ -37,12 +37,12 @@ defmodule Translator.Parser do
   # convert instructions to tuples of the form { instr, arg1, arg2 }
   #
   defp tokenize(lines) do
-    Enum.map lines, fn(line) ->
+    Enum.map (lines |> Enum.with_index), fn({ line, num }) ->
       line |> String.trim
            |> String.split(" ")
            |> List.to_tuple
            |> from_tuple
-           |> Command.to_asm
+           |> Command.to_asm(num)
     end
   end
 
