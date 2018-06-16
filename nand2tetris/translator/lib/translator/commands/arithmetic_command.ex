@@ -4,6 +4,7 @@ end
 
 
 defimpl Command, for: ArithmeticCommand do
+  import MemoryCommand
 
   @commands_binary [:add, :sub, :and, :or]
   @commands_unary  [:neg, :not]
@@ -20,47 +21,12 @@ defimpl Command, for: ArithmeticCommand do
 
 
   def pop(num) do
-    pop([], num)
-  end
-
-
-  def pop(stream, num) do
-    asm = Enum.map 1..num, fn n -> """
-      // pop value from stack into temp register @R{12+n}
-      //
-
-      @SP
-      M=M-1
-      A=M
-      D=M
-
-      @R#{12+n}
-      M=D
-    """
-    end
-
-    stream ++ asm
+    [pop_temp(num)]
   end
 
 
   def push(stream, num) do
-    asm = Enum.map 1..num, fn n -> """
-      // push temp register @R{12+n} to stack
-      //
-
-      @R#{12+n}
-      D=M
-
-      @SP
-      A=M
-      M=D
-
-      @SP
-      M=M+1
-    """
-    end
-
-    stream ++ asm
+    stream ++ [push_temp(num)]
   end
 
 
@@ -73,16 +39,16 @@ defimpl Command, for: ArithmeticCommand do
     end
 
     asm = """
-      // #{cmd} values in temp registers R13 and R14 and put result into R13
+      // #{cmd} values in temp registers R#{tempRegister} and R#{tempRegister+1} and put result into R#{tempRegister}
       //
 
-      @R13
+      @R#{tempRegister}
       D=M
 
-      @R14
+      @R#{tempRegister+1}
       D=M#{asm_op}D
 
-      @R13
+      @R#{tempRegister}
       M=D
     """
 
@@ -97,10 +63,10 @@ defimpl Command, for: ArithmeticCommand do
     end
 
     asm = """
-      // #{cmd} value in R13 and put result into R13
+      // #{cmd} value in R#{tempRegister} and put result into R#{tempRegister}
       //
 
-      @R13
+      @R#{tempRegister}
       D=M
       D=#{asm_op}D
       M=D
@@ -118,13 +84,13 @@ defimpl Command, for: ArithmeticCommand do
     end
 
     asm = """
-      // #{cmd} values in R13 and R14 and put result into R13
+      // #{cmd} values in R#{tempRegister} and R#{tempRegister+1} and put result into R#{tempRegister}
       //
 
-      @R13
+      @R#{tempRegister}
       D=M
 
-      @R14
+      @R#{tempRegister+1}
       D=M-D
 
       @TRUE.#{line_num}
@@ -137,7 +103,7 @@ defimpl Command, for: ArithmeticCommand do
       D=-1
       (END.#{line_num})
 
-      @R13
+      @R#{tempRegister}
       M=D
     """
 

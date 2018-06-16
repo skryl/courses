@@ -7,7 +7,11 @@ end
 defimpl Command, for: Any do
 
   def to_asm(command, line_num) do
-    "// NOOP"
+    """
+
+      // NOOP
+
+    """
   end
 
 end

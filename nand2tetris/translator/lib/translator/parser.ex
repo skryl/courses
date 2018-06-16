@@ -26,11 +26,9 @@ defmodule Translator.Parser do
   # clear comments and empty lines
   #
   defp clean(lines) do
-    Enum.filter lines, fn(line) ->
-      trimmed = String.trim(line)
-      String.length(trimmed) > 0 &&
-      String.slice(trimmed, 0..1) != "//"
-    end
+    lines
+      |> Enum.map(&(String.trim Regex.replace(~r/\/\/.*/, &1, "")))
+      |> Enum.filter(&(String.length(&1) > 0))
   end
 
 
@@ -50,6 +48,8 @@ defmodule Translator.Parser do
   # convert tuples to proper types
   #
   defp from_tuple(tuple) do
+    IO.inspect tuple
+
     case tuple do
       {name, seg, idx} when name in @memory_commands ->
         %MemoryCommand{name: String.to_atom(name), segment: String.to_atom(seg), index: idx}

@@ -1,8 +1,52 @@
 defmodule MemoryCommand do
   defstruct name: nil, segment: nil, index: 0
+
+  def tempRegister, do: 12
+
+  def pop_temp(num) do
+    asm = Enum.map Range.new(0, num-1), fn n -> """
+      // pop value from stack into temp @R#{tempRegister+n}
+      //
+
+      @SP
+      M=M-1
+      A=M
+      D=M
+
+      @R#{tempRegister+n}
+      M=D
+    """
+    end
+
+    asm
+  end
+
+
+  def push_temp(num) do
+    asm = Enum.map Range.new(0, num-1), fn n -> """
+      // push temp @R#{tempRegister+n} to stack
+      //
+
+      @R#{tempRegister+n}
+      D=M
+
+      @SP
+      A=M
+      M=D
+
+      @SP
+      M=M+1
+    """
+    end
+
+    asm
+  end
+
 end
 
+
 defimpl Command, for: MemoryCommand do
+  import MemoryCommand
 
   @segment_map %{ constant: "0",
                   pointer:  "3",
@@ -12,7 +56,6 @@ defimpl Command, for: MemoryCommand do
                   argument: "ARG",
                   this:     "THIS",
                   that:     "THAT" }
-
 
   def to_asm(%MemoryCommand{ name: cmd, segment: seg, index: idx }, line_num) do
     case cmd do
@@ -24,7 +67,7 @@ defimpl Command, for: MemoryCommand do
 
   def push(seg, offset) do
     offset = """
-      // push segment[offset] to stack
+      // push #{seg}[#{offset}] to stack
       //
 
       @#{offset}
@@ -54,14 +97,14 @@ defimpl Command, for: MemoryCommand do
 
   def pop(seg, offset) do
     asm = """
-      // pop value from stack into segment[offset]
+      // pop value from stack into #{seg}[#{offset}]
       //
 
       @#{offset}
       D=A
       @#{@segment_map[seg]}
       D=#{indirect?(seg) && "M" || "A"}+D
-      @R13
+      @R#{tempRegister}
       M=D
 
       @SP
@@ -69,7 +112,7 @@ defimpl Command, for: MemoryCommand do
       A=M
       D=M
 
-      @R13
+      @R#{tempRegister}
       A=M
       M=D
     """
