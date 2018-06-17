@@ -54,8 +54,11 @@ defmodule Translator.Parser do
       {name, seg, idx} when name in @memory_commands ->
         %MemoryCommand{name: String.to_atom(name), segment: String.to_atom(seg), index: idx}
 
-      {name, fname, vars} when name in @function_commands ->
-        %FunctionCommand{name: String.to_atom(name), function_name: fname, num_vars: vars}
+      {name, fname, args} when name in @function_commands ->
+        %FunctionCommand{name: String.to_atom(name), function: fname, args: String.to_integer(args)}
+
+      {name} when name in @function_commands ->
+        %FunctionCommand{name: String.to_atom(name)}
 
       {name, sym} when name in @control_commands ->
         %ControlCommand{name: String.to_atom(name), symbol: sym}

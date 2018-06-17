@@ -22,6 +22,25 @@ defmodule MemoryCommand do
   end
 
 
+  def pop_reg(reg) do
+    asm = """
+      // pop value from stack into *#{reg}
+      //
+
+      @SP
+      M=M-1
+      A=M
+      D=M
+
+      @#{reg}
+      A=M
+      M=D
+    """
+
+    [asm]
+  end
+
+
   def push_temp(num) do
     asm = Enum.map Range.new(0, num-1), fn n -> """
       // push temp @R#{tempRegister+n} to stack
@@ -41,6 +60,65 @@ defmodule MemoryCommand do
 
     asm
   end
+
+
+  def push_reg(reg) do
+    asm = """
+      // push @#{reg} to stack
+      //
+
+      @#{reg}
+      D=M
+
+      @SP
+      A=M
+      M=D
+
+      @SP
+      M=M+1
+    """
+
+    [asm]
+  end
+
+
+  def push_val(val) do
+    asm = """
+      // push #{val} to stack
+      //
+
+      @#{val}
+      D=A
+
+      @SP
+      A=M
+      M=D
+
+      @SP
+      M=M+1
+    """
+
+    [asm]
+  end
+
+
+  def copy_reg(destination, origin, offset) do
+    asm = """
+      // copy @#{origin}[offset] to @#{destination}
+      //
+
+      @#{origin}
+      D=M
+      @#{abs(offset)}
+      A=D#{offset < 0 && "-" || "+"}A
+      D=M
+      @#{destination}
+      M=D
+    """
+
+    [asm]
+  end
+
 
 end
 
@@ -65,7 +143,7 @@ defimpl Command, for: MemoryCommand do
   end
 
 
-  def push(seg, offset) do
+  defp push(seg, offset) do
     offset = """
       // push #{seg}[#{offset}] to stack
       //
@@ -95,7 +173,7 @@ defimpl Command, for: MemoryCommand do
   end
 
 
-  def pop(seg, offset) do
+  defp pop(seg, offset) do
     asm = """
       // pop value from stack into #{seg}[#{offset}]
       //
