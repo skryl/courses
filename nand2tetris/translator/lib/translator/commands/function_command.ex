@@ -19,6 +19,9 @@ defimpl Command, for: FunctionCommand do
   end
 
 
+  # repeat k times:
+  #  PUSH 0
+  #
   defp func(%FunctionCommand{ function: function, args: args }) do
     label = """
       // define subroutine #{function}[#{args}]
@@ -26,68 +29,76 @@ defimpl Command, for: FunctionCommand do
       (#{function})
     """
 
-    clear_locals = Enum.map(1..args, fn(_) -> push_val(0) end)
+    clear_locals = Enum.map(0..args |> Enum.filter(&(&1>0)), fn(i) -> push_val(0) end)
 
     [label] ++ clear_locals
   end
 
 
+  #   push return-address // (using label below)
+  #   push LCL
+  #   push ARG
+  #   push THIS
+  #   push THAT
+  #   ARG = SP-n-5
+  #   LCL = SP
+  #   goto f
+  # (return-address)
+  #
   defp call(%FunctionCommand{ function: function, args: args }, line_num) do
-    registers = ["#{function}_called.#{line_num}", "LCL", "ARG", "THIS", "THAT"]
+    addresses = ["#{function}_called.#{line_num}"]
+    registers = ["LCL", "ARG", "THIS", "THAT"]
 
     comment = """
       // call subroutine #{function}[#{args}]
       //
     """
 
-    store = Enum.map(registers, &(push_reg &1))
+    store_addresses = Enum.map(addresses, &(push_val &1))
+    store_registers = Enum.map(registers, &(push_reg &1))
 
     call = """
-      @SP
+      @SP           // LCL=SP
       D=M
-      @#{tempRegister}
+      @LCL
       M=D
 
-      @SP               // ARG = SP-n-5
+      @SP           // ARG = SP-args-5
       D=M
       @5
       D=D-A
       @#{args}
       D=D-A
-      @SP
+      @ARG
       M=D
 
-      @#{tempRegister}  // LCL=SP
-      D=M
-      @LCL
-      M=D
-
-      @#{function}      // goto function
+      @#{function}  // goto function
       0;JMP
 
       (#{function}_called.#{line_num}) // label for return address
     """
 
 
-    [comment] ++ store ++ [call]
+    [comment] ++ store_addresses ++ store_registers ++ [call]
   end
 
 
+  #  FRAME=LCL
+  #  RET=*(FRAME-5)
+  #  *ARG=pop()
+  #  SP=ARG+1
+  #  THAT=*(FRAME-1)
+  #  THIS=*(FRAME-2)
+  #  ARG=*(FRAME-3)
+  #  LCL=*(FRAME-4)
+  #  goto RET
+  #
   defp return do
-    registers = ["R#{tempRegister+1}", "LCL", "ARG", "THIS", "THAT"]
-
-    comment = """
-      // return from subroutine
-      //
-    """
-
-    pop_arg = pop_reg("ARG")
+    registers = ["LCL", "ARG", "THIS", "THAT"]
 
     frame = """
-      @ARG                // SP=ARG+1
-      D=M
-      @SP
-      M=D+1
+      // return from subroutine
+      //
 
       @LCL                // FRAME=LCL
       D=M
@@ -95,12 +106,20 @@ defimpl Command, for: FunctionCommand do
       M=D
     """
 
-    restore = registers
-      |> Enum.reverse
-      |> Enum.with_index
-      |> Enum.reverse
-      |> Enum.map(fn({reg, offset}) -> copy_reg(reg, "R#{tempRegister}", -(offset+1)) end)
+    ret = copy_reg("R#{tempRegister+1}", "R#{tempRegister}", -5)
 
+    pop_arg = pop_reg("ARG")
+
+    sp = """
+      @ARG                // SP=ARG+1
+      D=M
+      @SP
+      M=D+1
+    """
+
+    restore_regs = registers
+      |> Enum.reverse |> Enum.with_index |> Enum.reverse
+      |> Enum.map(fn({reg, offset}) -> copy_reg(reg, "R#{tempRegister}", -(offset+1)) end)
 
     jump = """
       @R#{tempRegister+1} // goto RET
@@ -108,7 +127,7 @@ defimpl Command, for: FunctionCommand do
       0;JMP
     """
 
-    [comment] ++ [pop_arg] ++ [frame] ++ restore ++ [jump]
+    [frame] ++ [ret] ++ [pop_arg] ++ [sp] ++ restore_regs ++ [jump]
   end
 
 end

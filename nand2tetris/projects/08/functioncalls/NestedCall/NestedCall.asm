@@ -2,32 +2,6 @@
   //
   (Sys.init)
 
-  // push 0 to stack
-  //
-
-  @0
-  D=A
-
-  @SP
-  A=M
-  M=D
-
-  @SP
-  M=M+1
-
-  // push 0 to stack
-  //
-
-  @0
-  D=A
-
-  @SP
-  A=M
-  M=D
-
-  @SP
-  M=M+1
-
   // push constant[4000] to stack
   //
 
@@ -93,11 +67,11 @@
   // call subroutine Sys.main[0]
   //
 
-  // push @Sys.main_called.5 to stack
+  // push Sys.main_called.5 to stack
   //
 
   @Sys.main_called.5
-  D=M
+  D=A
 
   @SP
   A=M
@@ -158,26 +132,21 @@
   @SP
   M=M+1
 
-  @SP
+  @SP           // LCL=SP
   D=M
-  @12
+  @LCL
   M=D
 
-  @SP               // ARG = SP-n-5
+  @SP           // ARG = SP-args-5
   D=M
   @5
   D=D-A
   @0
   D=D-A
-  @SP
+  @ARG
   M=D
 
-  @12  // LCL=SP
-  D=M
-  @LCL
-  M=D
-
-  @Sys.main      // goto function
+  @Sys.main  // goto function
   0;JMP
 
   (Sys.main_called.5) // label for return address
@@ -449,11 +418,11 @@
   // call subroutine Sys.add12[1]
   //
 
-  // push @Sys.add12_called.21 to stack
+  // push Sys.add12_called.21 to stack
   //
 
   @Sys.add12_called.21
-  D=M
+  D=A
 
   @SP
   A=M
@@ -514,26 +483,21 @@
   @SP
   M=M+1
 
-  @SP
+  @SP           // LCL=SP
   D=M
-  @12
+  @LCL
   M=D
 
-  @SP               // ARG = SP-n-5
+  @SP           // ARG = SP-args-5
   D=M
   @5
   D=D-A
   @1
   D=D-A
-  @SP
+  @ARG
   M=D
 
-  @12  // LCL=SP
-  D=M
-  @LCL
-  M=D
-
-  @Sys.add12      // goto function
+  @Sys.add12  // goto function
   0;JMP
 
   (Sys.add12_called.21) // label for return address
@@ -823,6 +787,22 @@
   // return from subroutine
   //
 
+  @LCL                // FRAME=LCL
+  D=M
+  @R12
+  M=D
+
+  // copy @R12[offset] to @R13
+  //
+
+  @R12
+  D=M
+  @5
+  A=D-A
+  D=M
+  @R13
+  M=D
+
   // pop value from stack into *ARG
   //
 
@@ -839,22 +819,6 @@
   D=M
   @SP
   M=D+1
-
-  @LCL                // FRAME=LCL
-  D=M
-  @R12
-  M=D
-
-  // copy @R12[offset] to @R13
-  //
-
-  @R12
-  D=M
-  @5
-  A=D-A
-  D=M
-  @R13
-  M=D
 
   // copy @R12[offset] to @LCL
   //
@@ -907,32 +871,6 @@
   // define subroutine Sys.add12[0]
   //
   (Sys.add12)
-
-  // push 0 to stack
-  //
-
-  @0
-  D=A
-
-  @SP
-  A=M
-  M=D
-
-  @SP
-  M=M+1
-
-  // push 0 to stack
-  //
-
-  @0
-  D=A
-
-  @SP
-  A=M
-  M=D
-
-  @SP
-  M=M+1
 
   // push constant[4002] to stack
   //
@@ -1073,6 +1011,22 @@
   // return from subroutine
   //
 
+  @LCL                // FRAME=LCL
+  D=M
+  @R12
+  M=D
+
+  // copy @R12[offset] to @R13
+  //
+
+  @R12
+  D=M
+  @5
+  A=D-A
+  D=M
+  @R13
+  M=D
+
   // pop value from stack into *ARG
   //
 
@@ -1089,22 +1043,6 @@
   D=M
   @SP
   M=D+1
-
-  @LCL                // FRAME=LCL
-  D=M
-  @R12
-  M=D
-
-  // copy @R12[offset] to @R13
-  //
-
-  @R12
-  D=M
-  @5
-  A=D-A
-  D=M
-  @R13
-  M=D
 
   // copy @R12[offset] to @LCL
   //
