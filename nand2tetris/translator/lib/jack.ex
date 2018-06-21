@@ -1,2 +1,0 @@
-defmodule Jack do
-end
