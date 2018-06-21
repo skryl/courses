@@ -1,5 +1,14 @@
-defmodule MemoryCommand do
-  defstruct name: nil, segment: nil, index: 0
+defmodule Jack.VM.MemoryCommand do
+  defstruct name: nil, segment: nil, index: 0, line: nil
+
+  @segment_map %{ constant: "0",
+                  pointer:  "3",
+                  temp:     "5",
+                  static:   "16",
+                  local:    "LCL",
+                  argument: "ARG",
+                  this:     "THIS",
+                  that:     "THAT" }
 
   def tempRegister, do: 12
 
@@ -120,30 +129,7 @@ defmodule MemoryCommand do
   end
 
 
-end
-
-
-defimpl Command, for: MemoryCommand do
-  import MemoryCommand
-
-  @segment_map %{ constant: "0",
-                  pointer:  "3",
-                  temp:     "5",
-                  static:   "16",
-                  local:    "LCL",
-                  argument: "ARG",
-                  this:     "THIS",
-                  that:     "THAT" }
-
-  def to_asm(%MemoryCommand{ name: cmd, segment: seg, index: idx }, line_num) do
-    case cmd do
-      :push -> push(seg, idx)
-      :pop  -> pop(seg, idx)
-    end
-  end
-
-
-  defp push(seg, offset) do
+  def push(seg, offset) do
     offset = """
       // push #{seg}[#{offset}] to stack
       //
@@ -173,7 +159,7 @@ defimpl Command, for: MemoryCommand do
   end
 
 
-  defp pop(seg, offset) do
+  def pop(seg, offset) do
     asm = """
       // pop value from stack into #{seg}[#{offset}]
       //
@@ -199,6 +185,18 @@ defimpl Command, for: MemoryCommand do
   end
 
 
+  def set_sp(val) do
+    asm = """
+      @#{val}
+      D=A
+      @SP
+      M=D
+    """
+
+    [asm]
+  end
+
+
   defp indirect?(seg) do
     try do
       addr = @segment_map[seg]
@@ -209,4 +207,17 @@ defimpl Command, for: MemoryCommand do
     end
   end
 
+end
+
+
+defimpl Jack.VM.Command, for: Jack.VM.MemoryCommand do
+  alias Jack.VM
+  import VM.MemoryCommand
+
+  def to_asm(%VM.MemoryCommand{ name: cmd, segment: seg, index: idx}) do
+    case cmd do
+      :push -> push(seg, idx)
+      :pop  -> pop(seg, idx)
+    end
+  end
 end

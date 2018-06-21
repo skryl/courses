@@ -1,35 +1,19 @@
-defmodule FunctionCommand do
-  defstruct name: nil, function: nil, args: 0
-end
-
-defimpl Command, for: FunctionCommand do
-  import MemoryCommand
-
-  @commands_func   [:function]
-  @commands_call   [:call]
-  @commands_return [:return]
-
-
-  def to_asm(%FunctionCommand{ name: name } = command, line_num) do
-    case name do
-      n when n in @commands_func   -> func(command)
-      n when n in @commands_call   -> call(command, line_num)
-      n when n in @commands_return -> return
-    end
-  end
-
+defmodule Jack.VM.FunctionCommand do
+  defstruct name: nil, function: nil, args: 0, line: nil
+  alias Jack.VM
+  import VM.MemoryCommand
 
   # repeat k times:
   #  PUSH 0
   #
-  defp func(%FunctionCommand{ function: function, args: args }) do
+  def func(%VM.FunctionCommand{ function: function, args: args }) do
     label = """
       // define subroutine #{function}[#{args}]
       //
       (#{function})
     """
 
-    clear_locals = Enum.map(0..args |> Enum.filter(&(&1>0)), fn(i) -> push_val(0) end)
+    clear_locals = Enum.map(0..args |> Enum.filter(&(&1>0)), fn(_) -> push_val(0) end)
 
     [label] ++ clear_locals
   end
@@ -45,8 +29,8 @@ defimpl Command, for: FunctionCommand do
   #   goto f
   # (return-address)
   #
-  defp call(%FunctionCommand{ function: function, args: args }, line_num) do
-    addresses = ["#{function}_called.#{line_num}"]
+  def call(%VM.FunctionCommand{ function: function, args: args, line: line }) do
+    addresses = ["#{function}_called.#{line}"]
     registers = ["LCL", "ARG", "THIS", "THAT"]
 
     comment = """
@@ -75,7 +59,7 @@ defimpl Command, for: FunctionCommand do
       @#{function}  // goto function
       0;JMP
 
-      (#{function}_called.#{line_num}) // label for return address
+      (#{function}_called.#{line}) // label for return address
     """
 
 
@@ -93,7 +77,7 @@ defimpl Command, for: FunctionCommand do
   #  LCL=*(FRAME-4)
   #  goto RET
   #
-  defp return do
+  def return do
     registers = ["LCL", "ARG", "THIS", "THAT"]
 
     frame = """
@@ -130,4 +114,23 @@ defimpl Command, for: FunctionCommand do
     [frame] ++ [ret] ++ [pop_arg] ++ [sp] ++ restore_regs ++ [jump]
   end
 
+end
+
+
+defimpl Jack.VM.Command, for: Jack.VM.FunctionCommand do
+  alias Jack.VM
+  import VM.FunctionCommand
+
+  @commands_func   [:function]
+  @commands_call   [:call]
+  @commands_return [:return]
+
+
+  def to_asm(%VM.FunctionCommand{ name: name} = command) do
+    case name do
+      n when n in @commands_func   -> func(command)
+      n when n in @commands_call   -> call(command)
+      n when n in @commands_return -> return()
+    end
+  end
 end

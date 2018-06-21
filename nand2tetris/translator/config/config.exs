@@ -1,7 +1,7 @@
 # This file is responsible for configuring your application
 # and its dependencies with the aid of the Mix.Config module.
 use Mix.Config
-config :logger, compile_time_purge_level: :debug
+config :logger, level: :info
 
 # This configuration is loaded before any dependency and is restricted
 # to this project. If another project depends on this project, this
@@ -11,11 +11,11 @@ config :logger, compile_time_purge_level: :debug
 
 # You can configure your application as:
 #
-#     config :translator, key: :value
+#     config :jack, key: :value
 #
 # and access this configuration in your application as:
 #
-#     Application.get_env(:translator, :key)
+#     Application.get_env(:jack, :key)
 #
 # You can also configure a 3rd-party app:
 #

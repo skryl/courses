@@ -1,2 +1,0 @@
-defmodule Translator do
-end

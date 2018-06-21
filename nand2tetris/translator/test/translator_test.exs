@@ -1,8 +1,8 @@
-defmodule TranslatorTest do
+defmodule JackTest do
   use ExUnit.Case
-  doctest Translator
+  doctest Jack
 
   test "greets the world" do
-    assert Translator.hello() == :world
+    assert Jack.hello() == :world
   end
 end

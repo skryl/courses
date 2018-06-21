@@ -1,23 +1,10 @@
-defmodule ArithmeticCommand do
-  defstruct name: nil
-end
-
-
-defimpl Command, for: ArithmeticCommand do
-  import MemoryCommand
+defmodule Jack.VM.ArithmeticCommand do
+  defstruct name: nil, line: nil
+  import Jack.VM.MemoryCommand
 
   @commands_binary [:add, :sub, :and, :or]
   @commands_unary  [:neg, :not]
   @commands_comp   [:eq, :gt, :lt]
-
-
-  def to_asm(%ArithmeticCommand{ name: cmd }, line_num) do
-    case cmd do
-      n when n in @commands_binary -> pop(2) |> op(cmd, line_num) |> push(1)
-      n when n in @commands_comp   -> pop(2) |> op(cmd, line_num) |> push(1)
-      n when n in @commands_unary  -> pop(1) |> op(cmd, line_num) |> push(1)
-    end
-  end
 
 
   def pop(num) do
@@ -30,7 +17,7 @@ defimpl Command, for: ArithmeticCommand do
   end
 
 
-  def op(stream, cmd, line_num) when cmd in @commands_binary do
+  def op(stream, cmd, _) when cmd in @commands_binary do
     asm_op = case cmd do
       :add -> "+"
       :sub -> "-"
@@ -56,7 +43,7 @@ defimpl Command, for: ArithmeticCommand do
   end
 
 
-  def op(stream, cmd, line_num) when cmd in @commands_unary do
+  def op(stream, cmd, _) when cmd in @commands_unary do
     asm_op = case cmd do
       :neg -> "-"
       :not -> "!"
@@ -76,7 +63,7 @@ defimpl Command, for: ArithmeticCommand do
   end
 
 
-  def op(stream, cmd, line_num) when cmd in @commands_comp do
+  def op(stream, cmd, line) when cmd in @commands_comp do
     asm_op = case cmd do
       :eq  -> "EQ"
       :gt  -> "GT"
@@ -93,15 +80,15 @@ defimpl Command, for: ArithmeticCommand do
       @R#{tempRegister+1}
       D=M-D
 
-      @TRUE.#{line_num}
+      @TRUE.#{line}
       D;J#{asm_op}
-      (FALSE.#{line_num})
+      (FALSE.#{line})
       D=0
-      @END.#{line_num}
+      @END.#{line}
       0;JMP
-      (TRUE.#{line_num})
+      (TRUE.#{line})
       D=-1
-      (END.#{line_num})
+      (END.#{line})
 
       @R#{tempRegister}
       M=D
@@ -110,5 +97,22 @@ defimpl Command, for: ArithmeticCommand do
     stream ++ [asm]
   end
 
+end
 
+
+defimpl Jack.VM.Command, for: Jack.VM.ArithmeticCommand do
+  alias Jack.VM
+  import VM.ArithmeticCommand
+
+  @commands_binary [:add, :sub, :and, :or]
+  @commands_unary  [:neg, :not]
+  @commands_comp   [:eq, :gt, :lt]
+
+  def to_asm(%VM.ArithmeticCommand{ name: cmd, line: line }) do
+    case cmd do
+      n when n in @commands_binary -> pop(2) |> op(cmd, line) |> push(1)
+      n when n in @commands_comp   -> pop(2) |> op(cmd, line) |> push(1)
+      n when n in @commands_unary  -> pop(1) |> op(cmd, line) |> push(1)
+    end
+  end
 end

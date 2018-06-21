@@ -1,9 +1,9 @@
-defmodule Translator.MixProject do
+defmodule Jack.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :translator,
+      app: :jack,
       version: "0.1.0",
       elixir: "~> 1.6",
       escript: escript_config(),
@@ -28,6 +28,6 @@ defmodule Translator.MixProject do
   end
 
   defp escript_config do
-    [ main_module: Translator.CLI ]
+    [ main_module: Jack.CLI ]
   end
 end
